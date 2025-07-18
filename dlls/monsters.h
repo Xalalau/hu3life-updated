@@ -47,7 +47,10 @@
 #define SF_MONSTER_HITMONSTERCLIP 4
 //										8
 #define SF_MONSTER_PRISONER 16 // monster won't attack anyone, no one will attacke him.
-//										32
+// ############ hu3lifezado ############ //
+// Hu3-Life NPCs IMORTAIS
+#define SF_MONSTER_GODMODE 32
+// ############ //
 //										64
 #define SF_MONSTER_WAIT_FOR_SCRIPT 128 //spawnflag that makes monsters wait to check for attacking until the script is done or they've been attacked
 #define SF_MONSTER_PREDISASTER 256	   //this is a predisaster scientist or barney. Influences how they speak.
