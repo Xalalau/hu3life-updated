@@ -1396,6 +1396,33 @@ int CountPlayers()
 	return num;
 }
 
+// ############ hu3lifezado ############ //
+/*
+==============
+CountPlayers
+
+Pegar um jogador aleatorio
+==============
+*/
+int UTIL_GetRandomPLayerID()
+{
+	int retry = 0;
+
+	while(true)
+	{
+		int randomPlayerID = RANDOM_LONG(1, gpGlobals->maxClients);
+		CBaseEntity *hu3Player = UTIL_PlayerByIndex(randomPlayerID);
+
+		if (hu3Player)
+			return randomPlayerID;
+		else
+			//ALERT(at_console, "Attempt to Select Player = %i but is not a valid player\n", randomPlayerID);
+			if (retry++ > 5)
+				return 0; // If we tried too many times, give up
+	}
+}
+// ############ //
+
 /*
 ==============
 ExtractCommandString
