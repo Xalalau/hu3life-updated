@@ -309,7 +309,14 @@ void CBaseMonster::GibMonster()
 		if (CVAR_GET_FLOAT("violence_hgibs") != 0) // Only the player will ever get here
 		{
 			CGib::SpawnHeadGib(pev);
-			CGib::SpawnRandomGibs(pev, 4, true); // throw some human gibs.
+
+			// ############ hu3lifezado ############ //
+			// Mais tripas com gore e menos no modo coop
+			if (CVAR_GET_FLOAT("hu3_gore"))
+				CGib::SpawnRandomGibs(pev, 5, true);
+			else
+				CGib::SpawnRandomGibs(pev, 2, true); // throw some human gibs.
+			// ############ //
 		}
 		gibbed = true;
 	}
@@ -317,7 +324,14 @@ void CBaseMonster::GibMonster()
 	{
 		if (CVAR_GET_FLOAT("violence_agibs") != 0) // Should never get here, but someone might call it directly
 		{
-			CGib::SpawnRandomGibs(pev, 4, false); // Throw alien gibs
+
+			// ############ hu3lifezado ############ //
+			// Mais tripas com gore e menos no modo coop
+			if (CVAR_GET_FLOAT("hu3_gore"))
+				CGib::SpawnRandomGibs(pev, 5, true);
+			else
+				CGib::SpawnRandomGibs(pev, 2, true);	// throw alien gibs.
+			// ############ //
 		}
 		gibbed = true;
 	}
@@ -517,7 +531,6 @@ void CBaseMonster::BecomeDead()
 
 	// give the corpse half of the monster's original maximum health.
 	pev->health = pev->max_health / 2;
-	pev->max_health = 5; // max_health now becomes a counter for how many blood decals the corpse can place.
 
 	// make the corpse fly away from the attack vector
 	pev->movetype = MOVETYPE_TOSS;
@@ -525,6 +538,14 @@ void CBaseMonster::BecomeDead()
 	//pev->origin.z += 2;
 	//pev->velocity = g_vecAttackDir * -1;
 	//pev->velocity = pev->velocity * RANDOM_FLOAT( 300, 400 );
+
+	// ############ hu3lifezado ############ //
+	// Mais sangue por corpo
+	if (CVAR_GET_FLOAT("hu3_gore"))
+		pev->max_health = pev->health;
+	else
+		pev->max_health = 5; // max_health now becomes a counter for how many blood decals the corpse can place.
+	// ############ //
 }
 
 
@@ -676,13 +697,31 @@ void CBaseEntity::SUB_FadeOut()
 //=========================================================
 void CGib::WaitTillLand()
 {
+	// ############ hu3lifezado ############ //
+	// Copiei esse fix da Valve que limita a velocidade do gib
+	if (CVAR_GET_FLOAT("hu3_gore"))
+	{
+		float length = pev->velocity.Length();
+
+		// ceiling at 1500.  The gib velocity equation is not bounded properly.  Rather than tune it
+		// in 3 separate places again, I'll just limit it here.
+		if (length > 1500.0)
+			pev->velocity = pev->velocity.Normalize() * 1500;		// This should really be sv_maxvelocity * 0.75 or something
+	}
+	// ############ //
+
 	if (!IsInWorld())
 	{
 		UTIL_Remove(this);
 		return;
 	}
 
-	if (pev->velocity == g_vecZero)
+	// ############ hu3lifezado ############ //
+	// Alterei para tambem iniciar o fade dos gibs na velocidade maxima
+	bool unlock = ((CVAR_GET_FLOAT("hu3_gore") && pev->velocity == pev->velocity.Normalize() * 1500) || (pev->velocity == g_vecZero));
+
+	if (unlock)
+	// ############ //
 	{
 		SetThink(&CGib::SUB_StartFadeOut);
 		pev->nextthink = gpGlobals->time + m_lifeTime;
@@ -714,11 +753,19 @@ void CGib::BounceGibTouch(CBaseEntity* pOther)
 
 	if ((pev->flags & FL_ONGROUND) != 0)
 	{
-		pev->velocity = pev->velocity * 0.9;
-		pev->angles.x = 0;
-		pev->angles.z = 0;
-		pev->avelocity.x = 0;
-		pev->avelocity.z = 0;
+		// ############ hu3lifezado ############ //
+		// Tripas saem voando feito loucas. Aceleram ao inves de desacelerar.
+		if (CVAR_GET_FLOAT("hu3_gore"))
+			pev->velocity = pev->velocity * 3;
+		else
+			pev->velocity = pev->velocity * 0.9;
+
+		// As seguintes foram comentadas para que o gib rode:
+		// pev->angles.x = 0;
+		// pev->angles.z = 0;
+		// pev->avelocity.x = 0;
+		// pev->avelocity.z = 0;
+		// ############ //
 	}
 	else
 	{
@@ -792,12 +839,26 @@ void CGib::Spawn(const char* szGibModel)
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 
 	pev->nextthink = gpGlobals->time + 4;
-	m_lifeTime = 25;
+
+	// ############ hu3lifezado ############ //
+	// Diminui o tempo de vida dos gibs
+	if (CVAR_GET_FLOAT("hu3_gore"))
+		m_lifeTime = 5;
+	else
+		m_lifeTime = 25;
+	// ############ //
 	SetThink(&CGib::WaitTillLand);
 	SetTouch(&CGib::BounceGibTouch);
 
 	m_material = matNone;
-	m_cBloodDecals = 5; // how many blood decals this gib can place (1 per bounce until none remain).
+
+	// ############ hu3lifezado ############ //
+	// Mais capacidade de cada tripa cagar tudo de sangue
+	if (CVAR_GET_FLOAT("hu3_gore"))
+		m_cBloodDecals = 9;
+	else
+		m_cBloodDecals = 5; // how many blood decals this gib can place (1 per bounce until none remain). 
+	// ############ //
 }
 
 // take health
@@ -1618,6 +1679,34 @@ void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult* ptr, in
 	}
 */
 
+	// ############ hu3lifezado ############ //
+	// Mais sangue na parede!!
+	if (flDamage < 10)
+	{
+		flNoise = 0.1;
+		if (CVAR_GET_FLOAT("hu3_gore"))
+			cCount = 3;
+		else
+			cCount = 1;
+	}
+	else if (flDamage < 25)
+	{
+		flNoise = 0.2;
+		if (CVAR_GET_FLOAT("hu3_gore"))
+			cCount = 7;
+		else
+			cCount = 2;
+	}
+	else
+	{
+		flNoise = 0.3;
+		if (CVAR_GET_FLOAT("hu3_gore"))
+			cCount = 12;
+		else
+			cCount = 3;
+	}
+	// ############ //
+
 	if (flDamage < 10)
 	{
 		flNoise = 0.1;
@@ -1673,6 +1762,12 @@ void CBaseMonster::MakeDamageBloodDecal(int cCount, float flNoise, TraceResult* 
 			pev->max_health--;
 		}
 	}
+
+	// ############ hu3lifezado ############ //
+	// Alien solta mais sangue (nao tem padrao, eu adicionei, apenas delete)
+	if (CVAR_GET_FLOAT("hu3_gore"))
+		cCount += 5;
+	// ############ //
 
 	for (i = 0; i < cCount; i++)
 	{
