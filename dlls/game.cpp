@@ -502,6 +502,8 @@ void GameDLLInit()
 	}
 
 	// ############ hu3lifezado ############ //
+	// Remover as armas do jogador
+	CVAR_REGISTER(&hu3_mp_strip);
 	// Tripas cagarrentas
 	CVAR_REGISTER(&hu3_gore);
 	// ############ //
