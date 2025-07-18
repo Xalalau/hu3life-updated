@@ -68,6 +68,26 @@ bool WeaponsResource::HasAmmo(WEAPON* p)
 	return (p->iAmmoType == -1) || p->iClip > 0 || 0 != CountAmmo(p->iAmmoType) || 0 != CountAmmo(p->iAmmo2Type) || (p->iFlags & WEAPON_FLAGS_SELECTONEMPTY) != 0;
 }
 
+// ############ hu3lifezado ############ //
+// Informa se o jogador possui alguma municao no geral
+bool WeaponsResource::HasAnyAmmo()
+{
+	// Iterate through all weapon slots and positions
+	for (int iSlot = 0; iSlot < MAX_WEAPON_SLOTS; iSlot++)
+	{
+		for (int iPos = 0; iPos < MAX_WEAPON_POSITIONS; iPos++)
+		{
+			WEAPON* pWeapon = rgSlots[iSlot][iPos];
+			if (pWeapon && HasAmmo(pWeapon))
+			{
+				return true;
+			}
+		}
+	}
+	// Nenhuma municao foi encontrada nesse jogador, portanto retornamos FALSE
+	return false;
+}
+// ############ //
 
 void WeaponsResource::LoadWeaponSprites(WEAPON* pWeapon)
 {

@@ -84,6 +84,11 @@ public:
 
 	bool HasAmmo(WEAPON* p);
 
+	// ############ hu3lifezado ############ //
+	// Informa se o jogador possui alguma municao no geral
+	bool HasAnyAmmo();
+	// ############ //
+
 	///// AMMO /////
 	void SetAmmo(int iId, int iCount) { riAmmo[iId] = iCount; }
 
