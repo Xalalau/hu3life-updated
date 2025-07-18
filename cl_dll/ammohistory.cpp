@@ -29,7 +29,11 @@
 HistoryResource gHR;
 
 #define AMMO_PICKUP_GAP (gHR.iHistoryGap + 5)
-#define AMMO_PICKUP_PICK_HEIGHT (32 + (gHR.iHistoryGap * 2))
+// ############ hu3lifezado ############ //
+// Nova altura ( 32 + ( iHistoryGap * 2 )) )
+#define AMMO_PICKUP_PICK_HEIGHT 5
+// ############ //
+#define AMMO_PICKUP_HEIGHT_MAX (ScreenHeight - 100)
 #define AMMO_PICKUP_HEIGHT_MAX (ScreenHeight - 100)
 
 #define MAX_ITEM_NAME 32
@@ -124,12 +128,19 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 				HSPRITE* spr = gWR.GetAmmoPicFromWeapon(rgAmmoHistory[i].iId, rcPic);
 
 				int r, g, b;
-				UnpackRGB(r, g, b, RGB_YELLOWISH);
+				// ############ hu3lifezado ############ //
+				// Mudei a cor do HUD (RGB_YELLOWISH)
+				UnpackRGB(r, g, b, RGB_WHITEISH);
+				// ############ //
 				float scale = (rgAmmoHistory[i].DisplayTime - flTime) * 80;
 				ScaleColors(r, g, b, V_min(scale, 255));
 
 				// Draw the pic
-				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				// ############ hu3lifezado ############ //
+				// Inverti a ordem de exibicao dos icones de itens e armas coletados (comeca por cima agora)
+				//int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				int ypos = AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i);
+				// ############ // 
 				int xpos = ScreenWidth - (rcPic.right - rcPic.left) - 4;
 				if (spr && 0 != *spr) // weapon isn't loaded yet so just don't draw the pic
 				{					  // the dll has to make sure it has sent info the weapons you need
@@ -148,7 +159,10 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 					return true; // we don't know about the weapon yet, so don't draw anything
 
 				int r, g, b;
-				UnpackRGB(r, g, b, RGB_YELLOWISH);
+				// ############ hu3lifezado ############ //
+				// Mudei a cor do HUD (RGB_YELLOWISH)
+				UnpackRGB(r, g, b, RGB_WHITEISH);
+				// ############ //
 
 				if (!gWR.HasAmmo(weap))
 					UnpackRGB(r, g, b, RGB_REDISH); // if the weapon doesn't have ammo, display it as red
@@ -156,7 +170,11 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 				float scale = (rgAmmoHistory[i].DisplayTime - flTime) * 80;
 				ScaleColors(r, g, b, V_min(scale, 255));
 
-				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				// ############ hu3lifezado ############ //
+				// Inverti a ordem de exibicao dos icones de itens e armas coletados (comeca por cima agora)
+				//int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				int ypos = AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i);
+				// ############ //  
 				int xpos = ScreenWidth - (weap->rcInactive.right - weap->rcInactive.left);
 				SPR_Set(weap->hInactive, r, g, b);
 				SPR_DrawAdditive(0, xpos, ypos, &weap->rcInactive);
@@ -170,11 +188,18 @@ bool HistoryResource::DrawAmmoHistory(float flTime)
 
 				Rect rect = gHUD.GetSpriteRect(rgAmmoHistory[i].iId);
 
-				UnpackRGB(r, g, b, RGB_YELLOWISH);
+				// ############ hu3lifezado ############ //
+				// Mudei a cor do HUD (RGB_YELLOWISH)
+				UnpackRGB(r, g, b, RGB_WHITEISH);
+				// ############ //
 				float scale = (rgAmmoHistory[i].DisplayTime - flTime) * 80;
 				ScaleColors(r, g, b, V_min(scale, 255));
 
-				int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				// ############ hu3lifezado ############ //
+				// Inverti a ordem de exibicao dos icones de itens e armas coletados (comeca por cima agora)
+				//int ypos = ScreenHeight - (AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i));
+				int ypos = AMMO_PICKUP_PICK_HEIGHT + (AMMO_PICKUP_GAP * i);
+				// ############ //  
 				int xpos = ScreenWidth - (rect.right - rect.left) - 10;
 
 				SPR_Set(gHUD.GetSprite(rgAmmoHistory[i].iId), r, g, b);

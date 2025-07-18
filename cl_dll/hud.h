@@ -26,6 +26,13 @@
 #define RGB_REDISH 0x00FF1010	 //255,160,0
 #define RGB_GREENISH 0x0000A000	 //0,160,0
 
+// ############ hu3lifezado ############ //
+// Novas cores
+#define RGB_WHITE 0x00FFFFFF // 255,255,255
+#define RGB_WHITEISH 0x00DCDCDC // 220,220,220
+#define RGB_GRAYISH 0x00A9A9A9 // 169,169,169
+// ############ //
+
 #include "common_types.h"
 #include "cl_dll.h"
 #include "ammo.h"
