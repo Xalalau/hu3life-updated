@@ -1370,7 +1370,10 @@ CMenuPanel* TeamFortressViewport::CreateTextWindow(int iTextToShow)
 	if (iTextToShow == SHOW_MOTD)
 	{
 		if (!m_szServerName || '\0' == m_szServerName[0])
-			strcpy(cTitle, "Half-Life");
+			// ############ hu3lifezado ############ //
+			// Nome mudado de Half-Life para Hu3-Life
+			strcpy(cTitle, "Hu3-Life");
+			// ############ //
 		else
 			strncpy(cTitle, m_szServerName, sizeof(cTitle));
 		cTitle[sizeof(cTitle) - 1] = 0;
