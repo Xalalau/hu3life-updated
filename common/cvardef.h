@@ -30,12 +30,15 @@
 #define FCVAR_FILTERCHARS (1 << 12)	// This cvar's string will be filtered for 'bad' characters (e.g. ';', '\n')
 #define FCVAR_NOBADPATHS (1 << 13)		// This cvar's string cannot contain file paths that are above the current directory
 
+// ############ hu3lifezado ############ //
+// Agora e "char* string;" em vez de "const char* string;"
 typedef struct cvar_s
 {
 	const char* name;
 	//Technically this should be non-const but that only matters to engine code
-	const char* string;
+	char* string;
 	int flags;
 	float value;
 	struct cvar_s* next;
 } cvar_t;
+// ############ //
