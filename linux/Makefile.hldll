@@ -47,6 +47,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/effects.o \
 	$(HLDLL_OBJ_DIR)/egon.o \
 	$(HLDLL_OBJ_DIR)/explode.o \
+	$(HLDLL_OBJ_DIR)/flyingcrowbar.o \
 	$(HLDLL_OBJ_DIR)/flyingmonster.o \
 	$(HLDLL_OBJ_DIR)/func_break.o \
 	$(HLDLL_OBJ_DIR)/func_tank.o \

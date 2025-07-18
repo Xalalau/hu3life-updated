@@ -588,6 +588,12 @@ public:
 	int m_iSwing;
 	TraceResult m_trHit;
 
+	// ############ hu3lifezado ############ //
+	// Tiro secundario, adaptado de: 
+	// http://web.archive.org/web/20020717063241/http://lambda.bubblemod.org/tuts/crowbar/
+	void SecondaryAttack();
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -598,6 +604,22 @@ public:
 	}
 
 private:
+	unsigned short m_usCrowbar;
+};
+
+class CFlyingCrowbar : public CBasePlayerWeapon
+{
+public:
+	void Spawn();
+	void Precache();
+	void BubbleThink();
+	void SpinTouch(CBaseEntity *pOther);
+	CBasePlayer *m_pPlayer;
+
+private:
+	EHANDLE m_hOwner;        // Original owner is stored here so we can
+							 // allow the crowbar to hit the user.
+
 	unsigned short m_usCrowbar;
 };
 
