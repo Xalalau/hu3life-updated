@@ -67,7 +67,10 @@ public:
 #define ITEM_SECURITY 3
 #define ITEM_BATTERY 4
 
-#define MAX_NORMAL_BATTERY 100
+// ############ hu3lifezado ############ //
+// O novo maximo e 666
+#define MAX_NORMAL_BATTERY	666
+// ############ //
 
 
 // weapon weight factors (for auto-switching)   (-1 = noswitch)
