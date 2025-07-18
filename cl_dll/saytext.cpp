@@ -29,8 +29,19 @@
 
 extern float* GetClientColor(int clientIndex);
 
-#define MAX_LINES 5
+// ############ hu3lifezado ############ //
+// Numero de linhas aumentado de 5 para 8
+#define MAX_LINES 8
+// ############ //
 #define MAX_CHARS_PER_LINE 256 /* it can be less than this, depending on char size */
+
+// ############ hu3lifezado ############ //
+// Suporte para impressao com mais cores
+const Vector g_ColorBlue = { 0.6f, 0.8f, 1.0f };
+const Vector g_ColorRed = { 1.00f, 0.3f, 0.3f };
+const Vector g_ColorGreen = { 0.6f, 1.0f, 0.6f };
+const Vector g_ColorGrey = { 0.8f, 0.8f, 0.8f };
+// ############ //
 
 // allow 20 pixels on either side of the text
 #define MAX_LINE_WIDTH (ScreenWidth - 40)
@@ -135,16 +146,83 @@ bool CHudSayText::Draw(float flTime)
 	{
 		if ('\0' != *g_szLineBuffer[i])
 		{
+			// ############ hu3lifezado ############ //
+			// Suporte para impressao com mais cores
+			//
+			// 2 modos estao disponiveis:
+			//
+			// -- Mensagens de funcao:
+			// ---- Aparecem apenas para o jogador atual e nao mostram o nome deste;
+			// ---- Sao geradas por funcoes dentro do codigo do jogo.
+			// -- Mensagens de chat:
+			// ---- Aparecem para todos os jogadores e exibem o nome do jogador que escreveu a mensagem;
+			// ---- Podem se comportar como mensagens de funcao (isso eh util para uso em certos comandos do Hu3);
+			// ---- Sao geradas pela escrita dos jogadores no chat do jogo.
+			//
+			// A cor eh controlada pela adicao de caracteres especiais no final das mensagens:
+			// -- |b
+			// ---- Deixa a mensagem azul (Blue)
+			// -- |r
+			// ---- Deixa a mensagem vermelha (Red)
+			// -- |g
+			// ---- Deixa a mensagem verde (Green)
+			// -- |y
+			// ---- Deixa a mensagem cinza (graY) (foda-se)
+			//
+			// ** Se esses caracteres forem omitidos, a cor fica amarela;
+			// ** Se a letra apos o "|" estiver maiuscula, a mensagem de chat sai no modo funcao.
+
+			// draw the first x characters in the player color
+			const std::size_t playerNameEndIndex = V_min(g_iNameLengths[i], MAX_PLAYER_NAME_LENGTH + 31);
+
+			Vector color = {g_pflNameColors[i][0], g_pflNameColors[i][1], g_pflNameColors[i][2]};
+			int forceNormal = 0; // 0 = Mensagem de chat; 1 = Mensagem de chat se comportando como de funcao; -1 = Mensagem de funcao
+			int saytextFix = 0; // Necessario para que eu possa usar o mesmo codigo com chamadas por funcao e via chat
+
+			// Mensagem de chat
 			if (*g_szLineBuffer[i] == 2 && g_pflNameColors[i])
 			{
-				// it's a saytext string
+				saytextFix = 1;
+				strncpy(line, g_szLineBuffer[i] + playerNameEndIndex, strlen(g_szLineBuffer[i]));
+			}
+			else
+			// Mensagem de funcao
+			{
+				strncpy(line, g_szLineBuffer[i], strlen(g_szLineBuffer[i]) + 1);
+				forceNormal = -1;
+			}
 
+			// Caracter especial
+			if (line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 2 - saytextFix] == '|')
+			{
+				// Caracter da cor
+				char ch = line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 1 - saytextFix];
+
+				// Atribuicao de cores
+				if (( ch == 'b') || (ch == 'B'))
+					color = g_ColorBlue;
+				else if ((ch == 'r') || (ch == 'R'))
+					color = g_ColorRed;
+				else if ((ch == 'g') || (ch == 'G'))
+					color = g_ColorGreen;
+				else if ((ch == 'y') || (ch == 'Y'))
+					color = g_ColorGrey;
+
+				// Se a cor estiver com letra maiuscula, ponho a mensagem no modo funcao
+				if ((ch >= 65 && ch <= 90) && forceNormal != -1)
+				{
+					forceNormal = 1;
+					strncpy(line, g_szLineBuffer[i] + playerNameEndIndex + 2, strlen(g_szLineBuffer[i]));
+				}
+			}
+			
+			// Impressao apenas para mensagens no modo Chat
+			if ((*g_szLineBuffer[i] == 2 && g_pflNameColors[i]) && ! forceNormal)
+			// if (*g_szLineBuffer[i] == 2 && g_pflNameColors[i])
+			{
 				//Make a copy we can freely modify
 				strncpy(line, g_szLineBuffer[i], sizeof(line) - 1);
 				line[sizeof(line) - 1] = '\0';
-
-				// draw the first x characters in the player color
-				const std::size_t playerNameEndIndex = V_min(g_iNameLengths[i], MAX_PLAYER_NAME_LENGTH + 31);
 
 				//Cut off the actual text so we can print player name
 				line[playerNameEndIndex] = '\0';
@@ -155,15 +233,36 @@ bool CHudSayText::Draw(float flTime)
 				//Reset last character
 				line[playerNameEndIndex] = g_szLineBuffer[i][playerNameEndIndex];
 
+				// Remocao dos caracteres especiais caso estejam presentes, se nao so preciso fechar a string
+				if (line[strlen(g_szLineBuffer[i]) - 3] == '|')
+					line[strlen(g_szLineBuffer[i]) - 3] = '\0';
+
+				// Aplicacao da cor
+				gEngfuncs.pfnDrawSetTextColor(color[0], color[1], color[2]);
+
 				// color is reset after each string draw
 				//Print the text without player name
-				DrawConsoleString(x, y, line + g_iNameLengths[i]);
+				DrawConsoleString(x, y, line + playerNameEndIndex);
+				//DrawConsoleString(x, y, line + g_iNameLengths[i]);
 			}
+			// Impressao apenas para mensagens no modo Funcao
 			else
 			{
+				// Remocao dos caracteres especiais caso estejam presentes
+				if (line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 5] == '|') // Mensagem de chat no modo Funcao
+					line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 5] = '\0';
+				else if (line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 2] == '|') // Mensagem de Funcao
+					line[strlen(g_szLineBuffer[i] + playerNameEndIndex) - 2] = '\0';
+				else
+					line[sizeof(line) - 1] = '\0';
+
+				// Aplicacao da cor
+				gEngfuncs.pfnDrawSetTextColor(color[0], color[1], color[2]);
+
 				// normal draw
-				DrawConsoleString(LINE_START, y, g_szLineBuffer[i]);
+				DrawConsoleString(LINE_START, y, line);
 			}
+			// ############ //
 		}
 
 		y += line_height;
@@ -241,7 +340,11 @@ void CHudSayText::SayTextPrint(const char* pszBuf, int iBufSize, int clientIndex
 	m_iFlags |= HUD_ACTIVE;
 	PlaySound("misc/talk.wav", 1);
 
-	Y_START = ScreenHeight - 60 - (line_height * (MAX_LINES + 2));
+	// ############ hu3lifezado ############ //
+	// Mensagens de chat agoram aparecem 40 unidades acima do normal
+	Y_START = ScreenHeight - 60 - 40 - (line_height * (MAX_LINES + 2));
+	//Y_START = ScreenHeight - 60 - (line_height * (MAX_LINES + 2));
+	// ############ //
 }
 
 void CHudSayText::EnsureTextFitsInOneLineAndWrapIfHaveTo(int line)
