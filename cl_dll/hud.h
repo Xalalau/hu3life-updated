@@ -400,6 +400,10 @@ public:
 	static char* BufferedLocaliseTextString(const char* msg);
 	const char* LookupString(const char* msg_name, int* msg_dest = NULL);
 	bool MsgFunc_TextMsg(const char* pszName, int iSize, void* pbuf);
+	// ############ hu3lifezado ############ //
+	// Nova funcao para facilitar a escrita de mensagens
+	void hu3_mensagem(char string[128], int opcao);
+	// ############ //
 };
 
 //
