@@ -325,6 +325,22 @@ bool CHudAmmo::Init()
 	return true;
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Funcao para religar o crosshair na primeira pessoa
+void CHudAmmo::hu3ReativarCrosshair()
+{
+	if (m_pWeapon != NULL && m_pWeapon->hCrosshair != NULL)
+		SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+}
+
+// Dizer se o jogador esta morto. No meio do menu... Ok
+bool CHudAmmo::isPlayerDead()
+{
+	return gHUD.m_fPlayerDead;
+}
+// ############ //
+
 void CHudAmmo::Reset()
 {
 	m_fFade = 0;
@@ -643,19 +659,29 @@ bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 
 	m_pWeapon = pWeapon;
 
-	if (gHUD.m_iFOV >= 90)
-	{ // normal crosshairs
-		if (fOnTarget && 0 != m_pWeapon->hAutoaim)
-			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// So mostra o crosshair na primeira pessoa
+	if (gEngfuncs.pfnGetCvarFloat("hu3_cam") == 0)
+	{
+		if (gHUD.m_iFOV >= 90)
+		{ // normal crosshairs
+			if (fOnTarget && 0 != m_pWeapon->hAutoaim)
+				SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
+			else
+				SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+		}
 		else
-			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+		{ // zoomed crosshairs
+			if (fOnTarget && 0 != m_pWeapon->hZoomedAutoaim)
+				SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);
+			else
+				SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, 255, 255, 255);
+		}
 	}
 	else
-	{ // zoomed crosshairs
-		if (fOnTarget && 0 != m_pWeapon->hZoomedAutoaim)
-			SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);
-		else
-			SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, 255, 255, 255);
+	{
+		SetCrosshair(0, nullrc, 0, 0, 0);
 	}
 
 	m_fFade = 200.0f; //!!!

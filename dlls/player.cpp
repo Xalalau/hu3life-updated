@@ -2937,6 +2937,10 @@ void CBasePlayer::Spawn()
 		}};
 
 	pev->classname = MAKE_STRING("player");
+	// ############ hu3lifezado ############ //
+	// Inicializacao do sprite de mira em terceira pessoa
+	hu3_cam_crosshair = 0;
+	// ############ //
 	pev->health = 100;
 	pev->armorvalue = 0;
 	pev->takedamage = DAMAGE_AIM;
@@ -3965,6 +3969,10 @@ void CBasePlayer::ItemPreFrame()
 
 	if (!m_pActiveItem)
 		return;
+
+	// char buf[32];
+	// sprintf(buf, "%d\n", m_pActiveItem->m_iId);
+	// ALERT(at_console, buf);
 
 	m_pActiveItem->ItemPreFrame();
 }

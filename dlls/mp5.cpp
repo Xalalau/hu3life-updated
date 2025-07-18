@@ -88,6 +88,43 @@ bool CMP5::GetItemInfo(ItemInfo* p)
 	return true;
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CMP5::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
+
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+
+// Recolha da arma
+void CMP5::Holster()
+{
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif	
+}
+// ############ //
+
 bool CMP5::Deploy()
 {
 	return DefaultDeploy("models/v_9mmAR.mdl", "models/p_9mmAR.mdl", MP5_DEPLOY, "mp5");
@@ -220,6 +257,15 @@ void CMP5::Reload()
 {
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	m_pLaser->RemoveSpot(m_pLaser);
+	m_pLaser = nullptr;
+#endif
+	// ############ //
 
 	DefaultReload(MP5_MAX_CLIP, MP5_RELOAD, 1.5);
 }

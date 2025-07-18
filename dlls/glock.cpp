@@ -53,7 +53,52 @@ void CGlock::Precache()
 
 	m_usFireGlock1 = PRECACHE_EVENT(1, "events/glock1.sc");
 	m_usFireGlock2 = PRECACHE_EVENT(1, "events/glock2.sc");
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Gambiarra braba! Dou precache da mira de terceira pessoa aqui para todas as armas. Nao achei o local certo para fazer isso... - Xalalau
+#ifndef CLIENT_DLL
+	UTIL_PrecacheOther("laser_hu3");
+#endif
+	// ############ //
 }
+
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CGlock::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
+
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+
+// Recolha da arma
+void CGlock::Holster()
+{
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif	
+}
+// ############ //
 
 bool CGlock::GetItemInfo(ItemInfo* p)
 {
@@ -161,7 +206,20 @@ void CGlock::Reload()
 	if (m_pPlayer->ammo_9mm <= 0)
 		return;
 
-	bool iResult = DefaultReload(17, m_iClip > 0 ? GLOCK_RELOAD_NOT_EMPTY : GLOCK_RELOAD, 1.5);
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira na terceira pessoa removida
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif	
+	// Tempo de recarga aumentado para acertar com a nova animacao. (1.5)
+	bool iResult = DefaultReload(17, m_iClip > 0 ? GLOCK_RELOAD_NOT_EMPTY : GLOCK_RELOAD, 2.2);
+	// ############ //
+
 	if (iResult)
 	{
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);

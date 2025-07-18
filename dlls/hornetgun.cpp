@@ -100,6 +100,30 @@ bool CHgun::GetItemInfo(ItemInfo* p)
 	return true;
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CHgun::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
+
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+// ############ //
 
 bool CHgun::Deploy()
 {
@@ -108,6 +132,18 @@ bool CHgun::Deploy()
 
 void CHgun::Holster()
 {
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif
+	// ############ //
+
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim(HGUN_DOWN);
 

@@ -493,6 +493,25 @@ enum glock_e
 	GLOCK_ADD_SILENCER
 };
 
+#ifndef CLIENT_DLL
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+class CHu3XSpot : public CBaseEntity
+{
+	void Spawn() override;
+	void Precache() override;
+	
+	int ObjectCaps() override { return FCAP_DONT_SAVE; }
+	
+public:
+	void UpdateSpot(CBasePlayer* m_pPlayer);
+	void RemoveSpot(CHu3XSpot* m_pLaser);
+
+	static CHu3XSpot* CreateSpot();
+};
+// ############ //
+#endif
+
 class CGlock : public CBasePlayerWeapon
 {
 public:
@@ -508,6 +527,13 @@ public:
 	void Reload() override;
 	void WeaponIdle() override;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	void Holster() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -520,6 +546,13 @@ public:
 private:
 	int m_iShell;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 
 	unsigned short m_usFireGlock1;
 	unsigned short m_usFireGlock2;
@@ -594,6 +627,12 @@ public:
 	void Reload() override;
 	void WeaponIdle() override;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -605,6 +644,14 @@ public:
 
 private:
 	unsigned short m_usFirePython;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum mp5_e
@@ -635,6 +682,13 @@ public:
 	float m_flNextAnimTime;
 	int m_iShell;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	void Holster() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -647,6 +701,14 @@ public:
 private:
 	unsigned short m_usMP5;
 	unsigned short m_usMP52;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum crossbow_e
@@ -682,6 +744,12 @@ public:
 	void Reload() override;
 	void WeaponIdle() override;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -694,6 +762,14 @@ public:
 private:
 	unsigned short m_usCrossbow;
 	unsigned short m_usCrossbow2;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum shotgun_e
@@ -735,6 +811,13 @@ public:
 	float m_flNextReload;
 	int m_iShell;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	void Holster() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -747,6 +830,14 @@ public:
 private:
 	unsigned short m_usDoubleFire;
 	unsigned short m_usSingleFire;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 class CLaserSpot : public CBaseEntity
@@ -891,6 +982,12 @@ public:
 	// we need to know so we can pick the right set of effects.
 	bool m_fPrimaryFire;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -906,6 +1003,14 @@ private:
 private:
 	unsigned short m_usGaussFire;
 	unsigned short m_usGaussSpin;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum egon_e
@@ -986,6 +1091,12 @@ public:
 	CBeam* m_pNoise;
 	CSprite* m_pSprite;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -1004,6 +1115,14 @@ private:
 	bool m_deployed;
 
 	unsigned short m_usEgonFire;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum hgun_e
@@ -1044,6 +1163,12 @@ public:
 
 	int m_iFirePhase; // don't save me.
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcoes para renderizar a mira em terceira pessoa
+	void ItemPreFrame() override;
+	// ############ //
+
 	bool UseDecrement() override
 	{
 #if defined(CLIENT_WEAPONS)
@@ -1055,6 +1180,14 @@ public:
 
 private:
 	unsigned short m_usHornetFire;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Mira em terceira pessoa
+#ifndef CLIENT_DLL
+	CHu3XSpot* m_pLaser;
+#endif
+	// ############ //
 };
 
 enum handgrenade_e

@@ -119,6 +119,13 @@ public:
 	bool MsgFunc_ItemPickup(const char* pszName, int iSize, void* pbuf);
 	bool MsgFunc_HideWeapon(const char* pszName, int iSize, void* pbuf);
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Funcao para religar o crosshair na primeira pessoa
+	void hu3ReativarCrosshair(void);
+	bool isPlayerDead(void);
+	// ############ //
+
 	void SlotInput(int iSlot);
 	void UserCmd_Slot1();
 	void UserCmd_Slot2();

@@ -72,6 +72,31 @@ void CPython::Precache()
 	m_usFirePython = PRECACHE_EVENT(1, "events/python.sc");
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CPython::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
+
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+// ############ //
+
 bool CPython::Deploy()
 {
 #ifdef CLIENT_DLL
@@ -94,6 +119,18 @@ bool CPython::Deploy()
 
 void CPython::Holster()
 {
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif
+	// ############ //
+
 	m_fInReload = false; // cancel any reload in progress.
 
 	if (m_pPlayer->m_iFOV != 0)
@@ -191,6 +228,18 @@ void CPython::Reload()
 {
 	if (m_pPlayer->ammo_357 <= 0)
 		return;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif
+	// ############ //
 
 	if (m_pPlayer->m_iFOV != 0)
 	{

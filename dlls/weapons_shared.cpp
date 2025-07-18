@@ -12,6 +12,15 @@
 *   without written permission from Valve LLC.
 *
 ****/
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Utilidades
+#ifdef CLIENT_DLL
+#include "hud.h"
+#include "cl_util.h"
+#endif
+// ############ //
+
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -47,6 +56,15 @@ void AddAmmoNameToAmmoRegistry(const char* szAmmoname, const char* weaponName)
 
 bool CBasePlayerWeapon::CanDeploy()
 {
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Icone de recarga na terceira pessoa
+	if (m_pPlayer->hu3_cam_reloading_weapon)
+	{
+		m_pPlayer->hu3_cam_reloading_weapon = false;
+	}
+	// ############
+
 	bool bHasAmmo = false;
 
 	if (!pszAmmo1())
@@ -85,6 +103,19 @@ bool CBasePlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay, in
 	if (j == 0)
 		return false;
 
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+#ifdef CLIENT_DLL
+	
+	// Icone de recarga na terceira pessoa
+	if (gEngfuncs.pfnGetCvarFloat("hu3_cam") != 0)
+	{
+		m_pPlayer->hu3_cam_reloading_weapon = true;
+	}
+	
+#endif
+	// ############ //
+
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + fDelay;
 
 	//!!UNDONE -- reload sound goes here !!!
@@ -121,6 +152,13 @@ void CBasePlayerWeapon::ItemPostFrame()
 {
 	if ((m_fInReload) && (m_pPlayer->m_flNextAttack <= UTIL_WeaponTimeBase()))
 	{
+		// ############ hu3lifezado ############ //
+		// [Terceira Pessoa]
+		// Icone de recarga na terceira pessoa
+		if (m_pPlayer->hu3_cam_reloading_weapon)
+			m_pPlayer->hu3_cam_reloading_weapon = false;
+		// ############
+
 		// complete the reload.
 		int j = V_min(iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);
 

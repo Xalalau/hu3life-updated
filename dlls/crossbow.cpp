@@ -266,6 +266,30 @@ bool CCrossbow::GetItemInfo(ItemInfo* p)
 	return true;
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CCrossbow::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
+
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+// ############ //
 
 bool CCrossbow::Deploy()
 {
@@ -276,6 +300,18 @@ bool CCrossbow::Deploy()
 
 void CCrossbow::Holster()
 {
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif
+	// ############ //
+
 	m_fInReload = false; // cancel any reload in progress.
 
 	if (m_pPlayer->m_iFOV != 0)
@@ -420,6 +456,16 @@ void CCrossbow::FireBolt()
 
 void CCrossbow::SecondaryAttack()
 {
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remover zoom. Funciona mas ainda da uma aproximacao maluca super rapida.
+	if (m_pPlayer->hu3_cam_crosshair != 0) {
+		pev->nextthink = UTIL_WeaponTimeBase() + 1.0;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.0;
+		return;
+	}
+	// ############ //
+
 	if (m_pPlayer->m_iFOV != 0)
 	{
 		m_pPlayer->m_iFOV = 0; // 0 means reset to default fov
@@ -438,6 +484,18 @@ void CCrossbow::Reload()
 {
 	if (m_pPlayer->ammo_bolts <= 0)
 		return;
+
+	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
+	// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif
+	// ############ //
 
 	if (m_pPlayer->m_iFOV != 0)
 	{

@@ -83,7 +83,42 @@ bool CShotgun::GetItemInfo(ItemInfo* p)
 	return true;
 }
 
+// ############ hu3lifezado ############ //
+// [Terceira Pessoa]
+// Chamada do ponto de mira da terceira pessoa
+void CShotgun::ItemPreFrame()
+{
+#ifndef CLIENT_DLL
+	if (m_pPlayer->hu3_cam_crosshair == 0)
+	{
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+	}
+	else
+	{
+		if (!m_pLaser)
+			m_pLaser = CHu3XSpot::CreateSpot();
 
+		m_pLaser->UpdateSpot(m_pPlayer);
+	}
+#endif	
+}
+
+// Recolha da arma
+void CShotgun::Holster()
+{
+#ifndef CLIENT_DLL
+	if (m_pLaser)
+	{
+		m_pLaser->RemoveSpot(m_pLaser);
+		m_pLaser = nullptr;
+	}
+#endif	
+}
+// ############ //
 
 bool CShotgun::Deploy()
 {
@@ -273,6 +308,18 @@ void CShotgun::Reload()
 
 		m_flNextReload = UTIL_WeaponTimeBase() + 0.5;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
+
+		// ############ hu3lifezado ############ //
+		// [Terceira Pessoa]
+		// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+#endif
+		// ############ //
 	}
 	else
 	{
@@ -280,6 +327,19 @@ void CShotgun::Reload()
 		m_iClip += 1;
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 1;
 		m_fInSpecialReload = 1;
+
+
+		// ############ hu3lifezado ############ //
+		// [Terceira Pessoa]
+		// Remocao da mira em terceira pessoa
+#ifndef CLIENT_DLL
+		if (m_pLaser)
+		{
+			m_pLaser->RemoveSpot(m_pLaser);
+			m_pLaser = nullptr;
+		}
+#endif
+		// ############ //
 	}
 }
 

@@ -530,14 +530,14 @@ void ClientCommand(edict_t* pEntity)
 	auto player = GetClassPtr<CBasePlayer>(reinterpret_cast<CBasePlayer*>(&pEntity->v));
 
 	// ############ hu3lifezado ############ //
+	// [Terceira Pessoa]
 	// Recebo variaveis de CBaseEntity* pPlayer do cliente e sincronizo no servidor
 	if (FStrEq(pcmd, "hu3_sync_ply_var"))
 	{
 		if (CMD_ARGC() == 3)
 		{
-			if (strcmp(CMD_ARGV(1), "some_command") == 0)
-				//pPlayer->some_command = atoi(CMD_ARGV(2));
-				return;
+			if (strcmp(CMD_ARGV(1), "hu3_cam_crosshair") == 0)
+				player->hu3_cam_crosshair = atoi(CMD_ARGV(2));
 			else
 				ALERT(at_console, "Nao foi possivel sincronizar: %s %s\n", CMD_ARGV(1), CMD_ARGV(2));
 		}

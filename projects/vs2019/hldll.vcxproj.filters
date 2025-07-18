@@ -195,6 +195,9 @@
     <ClCompile Include="..\..\dlls\houndeye.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\hu3spot.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dlls\ichthyosaur.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
