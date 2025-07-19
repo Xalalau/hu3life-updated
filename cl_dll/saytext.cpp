@@ -41,6 +41,7 @@ const Vector g_ColorBlue = { 0.6f, 0.8f, 1.0f };
 const Vector g_ColorRed = { 1.00f, 0.3f, 0.3f };
 const Vector g_ColorGreen = { 0.6f, 1.0f, 0.6f };
 const Vector g_ColorGrey = { 0.8f, 0.8f, 0.8f };
+const Vector g_ColorYellow = { 1.0f, 0.7f, 0.0f };
 // ############ //
 
 // allow 20 pixels on either side of the text
@@ -175,7 +176,7 @@ bool CHudSayText::Draw(float flTime)
 			// draw the first x characters in the player color
 			const std::size_t playerNameEndIndex = V_min(g_iNameLengths[i], MAX_PLAYER_NAME_LENGTH + 31);
 
-			Vector color = {g_pflNameColors[i][0], g_pflNameColors[i][1], g_pflNameColors[i][2]};
+			Vector color = g_ColorYellow;
 			int forceNormal = 0; // 0 = Mensagem de chat; 1 = Mensagem de chat se comportando como de funcao; -1 = Mensagem de funcao
 			int saytextFix = 0; // Necessario para que eu possa usar o mesmo codigo com chamadas por funcao e via chat
 
@@ -227,7 +228,7 @@ bool CHudSayText::Draw(float flTime)
 				//Cut off the actual text so we can print player name
 				line[playerNameEndIndex] = '\0';
 
-				gEngfuncs.pfnDrawSetTextColor(g_pflNameColors[i][0], g_pflNameColors[i][1], g_pflNameColors[i][2]);
+				gEngfuncs.pfnDrawSetTextColor(color[0], color[1], color[2]);
 				const int x = DrawConsoleString(LINE_START, y, line + 1); // don't draw the control code at the start
 
 				//Reset last character
