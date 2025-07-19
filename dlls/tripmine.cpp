@@ -246,7 +246,17 @@ void CTripmineGrenade::MakeBeam()
 	//PointEntInit causes clients to use the position of whatever the previous entity to use this edict had until the server updates them.
 	//m_pBeam->PointEntInit(vecTmpEnd, entindex());
 	m_pBeam->PointsInit(pev->origin, vecTmpEnd);
-	m_pBeam->SetColor(0, 214, 198);
+	// ############ hu3lifezado ############ //
+	// Jato de porra ( 0, 214, 198 )
+	m_pBeam->SetColor( 255, 255, 255 );
+	// Esporrada na parede
+	CBaseEntity *pEntity = NULL;
+	TraceResult *pTrace;
+	pTrace = &tr;
+	if ( !FNullEnt(pTrace->pHit) )
+		pEntity = CBaseEntity::Instance(pTrace->pHit);
+	UTIL_GunshotDecalTrace( &tr, RANDOM_LONG(33,34) ); // DECAL_SPIT1 e 2
+	// ############ //
 	m_pBeam->SetScrollRate(255);
 	m_pBeam->SetBrightness(64);
 }
