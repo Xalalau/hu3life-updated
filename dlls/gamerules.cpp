@@ -349,7 +349,8 @@ void CGameRules::RefreshSkillData()
 	// ############ hulifezado ############ //
 	// Novas armas
 	// Desert Eagle
-	gSkillData.plrDmgDeagle = GetSkillCvar( "sk_plr_eagle" );
+	gSkillData.plrDmgDeagle = GetSkillCvar("sk_plr_eagle");
+	gSkillData.plrDmgKnife = GetSkillCvar("sk_plr_knife");
 	// ############  //
 
 	// HEALTH/CHARGE

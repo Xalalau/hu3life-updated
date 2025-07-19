@@ -350,6 +350,7 @@ void W_Precache()
 	// ############ hulifezado ############ //
 	// Novas armas
 	UTIL_PrecacheOtherWeapon("weapon_eagle");
+	UTIL_PrecacheOtherWeapon("weapon_knife");
 	// ############
 
 	if (g_pGameRules->IsDeathmatch())

@@ -3650,6 +3650,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		// ############ hulifezado ############ //
 		// Novas armas
 		GiveNamedItem("weapon_eagle");
+		GiveNamedItem("weapon_knife");
 		// ############ //
 
 		gEvilImpulse101 = false;

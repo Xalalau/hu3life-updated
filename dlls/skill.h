@@ -113,6 +113,7 @@ struct skilldata_t
 	// ############ hulifezado ############ //
 	// Novas armas
 	float plrDmgDeagle;
+	float plrDmgKnife;
 	// ############ //
 	
 	// weapons shared by monsters

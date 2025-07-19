@@ -1439,6 +1439,9 @@ private:
 	unsigned short m_usSnarkFire;
 };
 
+// ############ hu3lifezado ############ //
+// Novas armas
+
 enum DesertEagleAnim
 {
 	DEAGLE_IDLE1 = 0,
@@ -1469,7 +1472,6 @@ public:
 	void SecondaryAttack() override;
 	void Reload() override;
 
-	// ############ hu3lifezado ############ //
 	// Chance da arma quebrar e sair voando
 	bool RandomlyBreak();
 	// Chance da arma travar e nao atirar mais
@@ -1480,7 +1482,6 @@ public:
 	void ShrapnelDamage(int chance, int min_damage, int max_damage);
 	// Perder toda a municao
 	bool RandomlyLostAllAmmo();
-	// ############ //
 
 	bool UseDecrement() override
 	{
@@ -1498,7 +1499,6 @@ private:
 	int m_iShell;
 	unsigned short m_usFireEagle;
 
-	// ############ hu3lifezado ############ //
 	// Tempo ate processar a nova chance da arma atirar sozinha
 	float m_nextbadshootchance;
 	// Nos nao podemos imprimir mensagens assim que o jogo comeca
@@ -1518,4 +1518,62 @@ public:
 	// Recuperar numero inicial de balas / Controlar retirada de balas no caso de arma jogada
 	int m_iClip2;
 	// ############ //
+};
+
+enum KnifeAnim
+{
+	KNIFE_IDLE1 = 0,
+	KNIFE_DRAW,
+	KNIFE_HOLSTER,
+	KNIFE_ATTACK1,
+	KNIFE_ATTACK1MISS,
+	KNIFE_ATTACK2,
+	KNIFE_ATTACK2HIT,
+	KNIFE_ATTACK3,
+	KNIFE_ATTACK3HIT,
+	KNIFE_IDLE2,
+	KNIFE_IDLE3,
+	KNIFE_CHARGE,
+	KNIFE_STAB
+};
+
+class CKnife : public CBasePlayerWeapon
+{
+public:
+	using BaseClass = CBasePlayerWeapon;
+
+	void Precache() override;
+
+	void Spawn() override;
+
+	bool Deploy() override;
+
+	void Holster() override;
+
+	void PrimaryAttack() override;
+
+	bool Swing(const bool bFirst);
+
+	void EXPORT SwingAgain();
+
+	void EXPORT Smack();
+
+	int iItemSlot() override;
+
+	bool GetItemInfo(ItemInfo* p) override;
+
+	bool UseDecrement() override
+	{
+#if defined(CLIENT_WEAPONS)
+		return true;
+#else
+		return false;
+#endif
+	}
+
+private:
+	unsigned short m_usKnife;
+
+	int m_iSwing;
+	TraceResult m_trHit;
 };

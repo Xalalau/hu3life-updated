@@ -62,6 +62,7 @@ enum WeaponId
 	// ############ hulifezado ############ //
 	// Novas armas
 	WEAPON_DESERT_EAGLE,
+	WEAPON_KNIFE,
 	// ############ //
 
 	WEAPON_SUIT = 31

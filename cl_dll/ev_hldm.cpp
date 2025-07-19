@@ -833,64 +833,6 @@ void EV_SpinGauss(event_args_t* args)
 	gEngfuncs.pEventAPI->EV_PlaySound(idx, origin, CHAN_WEAPON, "ambience/pulsemachine.wav", 1.0, ATTN_NORM, iSoundState, pitch);
 }
 
-// ############ hulifezado ############ //
-//======================
-//	   NOVAS ARMAS
-//======================
-void EV_FireEagle( event_args_t* args )
-{
-	const bool bEmpty = args->bparam1 != 0;
-
-	Vector up, right, forward;
-
-	AngleVectors( args->angles, forward, right, up );
-
-	const int iShell = gEngfuncs.pEventAPI->EV_FindModelIndex( "models/shell.mdl" );
-
-	if( EV_IsLocal( args->entindex ) )
-	{
-		EV_MuzzleFlash();
-
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( bEmpty ? DEAGLE_SHOOT_EMPTY : DEAGLE_SHOOT, 0 );
-		V_PunchAxis( 0, -4.0 );
-	}
-
-	Vector ShellVelocity;
-	Vector ShellOrigin;
-
-	EV_GetDefaultShellInfo(
-		args,
-		args->origin, args->velocity,
-		ShellVelocity,
-		ShellOrigin,
-		forward, right, up,
-		-9.0, 14.0, 9.0 );
-
-	EV_EjectBrass( ShellOrigin, ShellVelocity, args->angles[YAW], iShell, TE_BOUNCE_SHELL );
-
-	gEngfuncs.pEventAPI->EV_PlaySound(
-		args->entindex,
-		args->origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav",
-		gEngfuncs.pfnRandomFloat( 0.92, 1 ), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
-
-	Vector vecSrc;
-
-	EV_GetGunPosition( args, vecSrc, args->origin );
-
-	Vector vecAiming = forward;
-
-	EV_HLDM_FireBullets(
-		args->entindex,
-		forward, right, up,
-		1,
-		vecSrc, vecAiming,
-		8192.0,
-		BULLET_PLAYER_DEAGLE,
-		0, nullptr,
-		args->fparam1, args->fparam2 );
-}
-// ############ //
-
 /*
 ==============================
 EV_StopPreviousGauss
@@ -1752,3 +1694,96 @@ bool EV_TFC_IsAllyTeam(int iTeam1, int iTeam2)
 {
 	return false;
 }
+
+// ############ hulifezado ############ //
+//======================
+//	   NOVAS ARMAS
+//======================
+void EV_FireEagle( event_args_t* args )
+{
+	const bool bEmpty = args->bparam1 != 0;
+
+	Vector up, right, forward;
+
+	AngleVectors( args->angles, forward, right, up );
+
+	const int iShell = gEngfuncs.pEventAPI->EV_FindModelIndex( "models/shell.mdl" );
+
+	if( EV_IsLocal( args->entindex ) )
+	{
+		EV_MuzzleFlash();
+
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( bEmpty ? DEAGLE_SHOOT_EMPTY : DEAGLE_SHOOT, 0 );
+		V_PunchAxis( 0, -4.0 );
+	}
+
+	Vector ShellVelocity;
+	Vector ShellOrigin;
+
+	EV_GetDefaultShellInfo(
+		args,
+		args->origin, args->velocity,
+		ShellVelocity,
+		ShellOrigin,
+		forward, right, up,
+		-9.0, 14.0, 9.0 );
+
+	EV_EjectBrass( ShellOrigin, ShellVelocity, args->angles[YAW], iShell, TE_BOUNCE_SHELL );
+
+	gEngfuncs.pEventAPI->EV_PlaySound(
+		args->entindex,
+		args->origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav",
+		gEngfuncs.pfnRandomFloat( 0.92, 1 ), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+
+	Vector vecSrc;
+
+	EV_GetGunPosition( args, vecSrc, args->origin );
+
+	Vector vecAiming = forward;
+
+	EV_HLDM_FireBullets(
+		args->entindex,
+		forward, right, up,
+		1,
+		vecSrc, vecAiming,
+		8192.0,
+		BULLET_PLAYER_DEAGLE,
+		0, nullptr,
+		args->fparam1, args->fparam2 );
+}
+
+
+//Only predict the miss sounds, hit sounds are still played 
+//server side, so players don't get the wrong idea.
+void EV_Knife( event_args_t* args )
+{
+	const int idx = args->entindex;
+	Vector origin = args->origin;
+
+	const char* pszSwingSound;
+
+	switch( g_iSwing )
+	{
+	default:
+	case 0: pszSwingSound = "weapons/knife1.wav"; break;
+	case 1: pszSwingSound = "weapons/knife2.wav"; break;
+	case 2: pszSwingSound = "weapons/knife3.wav"; break;
+	}
+
+	//Play Swing sound
+	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, pszSwingSound, 1, ATTN_NORM, 0, PITCH_NORM );
+
+	if( EV_IsLocal( idx ) )
+	{
+		switch( ( g_iSwing++ ) % 3 )
+		{
+		case 0:
+			gEngfuncs.pEventAPI->EV_WeaponAnimation( KNIFE_ATTACK1MISS, 0 ); break;
+		case 1:
+			gEngfuncs.pEventAPI->EV_WeaponAnimation( KNIFE_ATTACK2, 0 ); break;
+		case 2:
+			gEngfuncs.pEventAPI->EV_WeaponAnimation( KNIFE_ATTACK3, 0 ); break;
+		}
+	}
+}
+// ############ //

@@ -100,6 +100,7 @@ DLL_OBJS = \
 	$(HL1_SERVER_OBJ_DIR)/shotgun.o \
 	$(HL1_SERVER_OBJ_DIR)/squeakgrenade.o \
 	$(HL1_SERVER_OBJ_DIR)/tripmine.o \
+	$(HL1_SERVER_OBJ_DIR)/knife.o \
 	$(HL1_SERVER_OBJ_DIR)/weapons_shared.o \
 
 
