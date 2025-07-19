@@ -1365,8 +1365,10 @@ bool CHudAmmo::DrawWList(float flTime)
 		{
 			// Draw Row of weapons.
 
-			UnpackRGB(r, g, b, RGB_YELLOWISH);
-
+			// ############ hu3lifezado ############ //
+			// Mudei a cor do HUD (RGB_YELLOWISH)
+			UnpackRGB(r, g, b, RGB_GREENISH);
+			// ############ //
 			for (int iPos = 0; iPos < MAX_WEAPON_POSITIONS; iPos++)
 			{
 				WEAPON* p = gWR.GetWeaponSlot(i, iPos);
