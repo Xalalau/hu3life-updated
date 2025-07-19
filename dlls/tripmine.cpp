@@ -359,7 +359,11 @@ void CTripmine::Spawn()
 	m_iId = WEAPON_TRIPMINE;
 	SET_MODEL(ENT(pev), "models/v_tripmine.mdl");
 	pev->frame = 0;
-	pev->body = 3;
+	// ############ hu3lifezado ############ //
+	// Posicao extra para evitar que a mina pinto de parede entre na chao na forma world (3)
+	pev->body = 4;
+	// ############ //
+
 	pev->sequence = TRIPMINE_GROUND;
 	// ResetSequenceInfo( );
 	pev->framerate = 0;
