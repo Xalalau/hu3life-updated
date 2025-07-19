@@ -155,7 +155,7 @@ void CFuncParent::Spawn()
 
 	// Modifico as propriedades basicas da entidade
 	pev->movetype = MOVETYPE_PUSH;
-	//SetAbsOrigin(GetAbsOrigin());
+	UTIL_SetOrigin(pev, pev->origin);
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
 	// Pego o vetor da posicao atual
