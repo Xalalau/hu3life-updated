@@ -138,6 +138,9 @@
     <ClCompile Include="..\..\dlls\func_break.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\func_parent.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dlls\func_tank.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>

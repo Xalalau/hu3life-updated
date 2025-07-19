@@ -53,6 +53,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/flyingtouros.o \
 	$(HLDLL_OBJ_DIR)/flyingtourossecondary.o \
 	$(HLDLL_OBJ_DIR)/func_break.o \
+	$(HLDLL_OBJ_DIR)/func_parent.o \
 	$(HLDLL_OBJ_DIR)/func_tank.o \
 	$(HLDLL_OBJ_DIR)/game.o \
 	$(HLDLL_OBJ_DIR)/gamerules.o \

@@ -589,6 +589,86 @@ protected:
 };
 #define SetMoveDone(a) m_pfnCallWhenMoveDone = static_cast<void (CBaseToggle::*)()>(a)
 
+// ############ hu3lifezado ############ //
+// Arrasta outras entidades consigo ao se mover
+#define noiseMoving noise1
+#define noiseArrived noise2
+
+class CFuncParent : public CBaseToggle
+{
+public:
+	using BaseClass = CBaseToggle;
+
+#ifndef CLIENT_DLL
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
+	void Spawn(void) override;
+	bool KeyValue(KeyValueData* pkvd) override;
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) override;
+
+	entvars_t * SetEntVars_t(string_t parent01_nome);
+	entvars_t * ProcessMovement(entvars_t *parent, string_t targetName);
+	void LinearMove(entvars_t *entity, Vector vecDest, float flSpeed);
+	void LinearMoveDone(void);
+
+	float speed;
+	float wait;
+	float parent_time;
+	bool blockThink;
+
+	string_t parent01_name;
+	entvars_t *parent01;
+
+	string_t parent02_name;
+	entvars_t *parent02;
+
+	string_t parent03_name;
+	entvars_t *parent03;
+
+	string_t parent04_name;
+	entvars_t *parent04;
+
+	string_t parent05_name;
+	entvars_t *parent05;
+
+	string_t parent06_name;
+	entvars_t *parent06;
+
+	string_t parent07_name;
+	entvars_t *parent07;
+
+	string_t parent08_name;
+	entvars_t *parent08;
+
+	string_t parent09_name;
+	entvars_t *parent09;
+
+	string_t parent10_name;
+	entvars_t *parent10;
+
+	string_t parent11_name;
+	entvars_t *parent11;
+
+	string_t parent12_name;
+	entvars_t *parent12;
+
+	string_t parent13_name;
+	entvars_t *parent13;
+
+	string_t parent14_name;
+	entvars_t *parent14;
+
+	string_t parent15_name;
+	entvars_t *parent15;
+
+	string_t parent16_name;
+	entvars_t *parent16;
+};
+// ############ //
 
 // people gib if their health is <= this at the time of death
 #define GIB_HEALTH_VALUE -30
