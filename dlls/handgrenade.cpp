@@ -46,6 +46,11 @@ void CHandGrenade::Precache()
 	PRECACHE_MODEL("models/w_grenade.mdl");
 	PRECACHE_MODEL("models/v_grenade.mdl");
 	PRECACHE_MODEL("models/p_grenade.mdl");
+
+	// ############ hu3lifezado ############ //
+	// "Ahhhhh, q delicia!" de feijoada
+	PRECACHE_SOUND("weapons/feijoada_delicia.wav");
+	// ############
 }
 
 bool CHandGrenade::GetItemInfo(ItemInfo* p)
@@ -104,6 +109,11 @@ void CHandGrenade::PrimaryAttack()
 {
 	if (0 == m_flStartThrow && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
 	{
+		// ############ hu3lifezado ############ //
+		// "Ahhhhh, q delicia!" de feijoada
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/feijoada_delicia.wav", 1.0, ATTN_NORM);
+		// ############
+
 		m_flStartThrow = gpGlobals->time;
 		m_flReleaseThrow = 0;
 
