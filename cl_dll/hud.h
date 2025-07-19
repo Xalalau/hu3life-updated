@@ -124,6 +124,8 @@ public:
 	// Funcao para religar o crosshair na primeira pessoa
 	void hu3ReativarCrosshair(void);
 	bool isPlayerDead(void);
+	// Cores da Latinha de Pichacao no HUD
+	bool MsgFunc_Graffiti(const char *pszName, int iSize, void *pbuf);
 	// ############ //
 
 	void SlotInput(int iSlot);
@@ -147,6 +149,11 @@ private:
 	WEAPON* m_pWeapon;
 	int m_HUD_bucket0;
 	int m_HUD_selection;
+
+	// ############ hu3lifezado ############ //
+	// Cores da Latinha de Pichacao no HUD
+	int m_pCvarLColor;
+	// ############ //
 };
 
 //

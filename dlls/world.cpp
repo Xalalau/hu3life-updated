@@ -84,6 +84,23 @@ DLL_DECALLIST gDecals[] = {
 	{"{smscorch3", 0}, // DECAL_SMALLSCORCH3,	// Small scorch mark
 	{"{mommablob", 0}, // DECAL_MOMMABIRTH		// BM Birth spray
 	{"{mommablob", 0}, // DECAL_MOMMASPLAT		// BM Mortar spray?? need decal
+	// ############ hu3lifezado ############ //
+	// Sprites para usar na arma de pichacao (ficam no decals.wad. Os de HUD estao no hud.txt)
+	// Insira novos decals no final! Nao mexa na ordem! kkkk
+	{ "{preto", 0 },    // DECAL_PRETO
+	{ "{branco", 0 },   // DECAL_BRANCO
+	{ "{vermelho", 0 }, // DECAL_VERMELHO
+	{ "{rosa", 0 },     // DECAL_ROSA
+	{ "{roxo", 0 },     // DECAL_ROXO
+	{ "{azul_forte", 0 }, // DECAL_AZUL_FORTE
+	{ "{azul_fraco", 0 }, // DECAL_AZUL_FRACO
+	{ "{verde", 0 },    // DECAL_VERDE
+	{ "{amarelo", 0 },  // DECAL_AMARELO
+	{ "{laranja", 0 },  // DECAL_LARANJA
+	{ "{fundobranco", 0 }, // DECAL_FUNDOBRANCO
+	{ "{fundopreto", 0 },  // DECAL_FUNDOPRETO
+	{ "{carlosadao", 0 },  // DECAL_CARLOSADAO
+	// ############ //
 };
 
 /*

@@ -1472,6 +1472,7 @@ public:
 	void SecondaryAttack() override;
 	void Reload() override;
 
+	// ############ hu3lifezado ############ //
 	// Chance da arma quebrar e sair voando
 	bool RandomlyBreak();
 	// Chance da arma travar e nao atirar mais
@@ -1482,6 +1483,7 @@ public:
 	void ShrapnelDamage(int chance, int min_damage, int max_damage);
 	// Perder toda a municao
 	bool RandomlyLostAllAmmo();
+	// ############ //
 
 	bool UseDecrement() override
 	{
@@ -1499,6 +1501,7 @@ private:
 	int m_iShell;
 	unsigned short m_usFireEagle;
 
+	// ############ hu3lifezado ############ //
 	// Tempo ate processar a nova chance da arma atirar sozinha
 	float m_nextbadshootchance;
 	// Nos nao podemos imprimir mensagens assim que o jogo comeca
@@ -1534,7 +1537,12 @@ enum KnifeAnim
 	KNIFE_IDLE2,
 	KNIFE_IDLE3,
 	KNIFE_CHARGE,
-	KNIFE_STAB
+	KNIFE_STAB,
+	// ############ hu3lifezado ############ //
+	// Adicionadas novas animacoes
+	KNIFE_PICHAVASIM,
+	KNIFE_SELECTION
+	// ############ //
 };
 
 class CKnife : public CBasePlayerWeapon
@@ -1552,12 +1560,6 @@ public:
 
 	void PrimaryAttack() override;
 
-	bool Swing(const bool bFirst);
-
-	void EXPORT SwingAgain();
-
-	void EXPORT Smack();
-
 	int iItemSlot() override;
 
 	bool GetItemInfo(ItemInfo* p) override;
@@ -1571,9 +1573,50 @@ public:
 #endif
 	}
 
+	// ############ hu3lifezado ############ //
+	// Funcoes deletadas
+	// bool Swing(const bool bFirst);
+	// void SwingAgain();
+	// void Smack();
+
+	// Pixação
+	void WeaponIdle() override;
+
+	void SecondaryAttack() override;
+
+	void HandleAnimationAndSound();
+
+	void ApplyDamage();
+
+	bool TraceSomeShit();
+
+	void PlaceColor();
+
+	static const char *pSelectionSounds[];
+	// ############ //
+
 private:
 	unsigned short m_usKnife;
 
 	int m_iSwing;
 	TraceResult m_trHit;
+
+	// ############ hu3lifezado ############ //
+	// Tempo ate processar novamente dano, animacoes e sons
+	float m_nextthink;
+	// Tempo ate proxima mudanca de cor ser liberada
+	float m_nextcolorchange;
+	// Tempo que quando ultrapassado forca a rechecagem do primeiro acerto
+	float m_nextfirsthit;
+	// Tempo para o proximo som de spray aplicado em parede
+	float m_nextsprayonwallsound;
+	// Cor selecionada (64 clientes)
+#ifndef CLIENT_DLL
+	int hu3_spray_color[64];
+#else
+	int hu3_spray_color[2];
+#endif
+	// ############ //
 };
+
+// ############

@@ -61,7 +61,24 @@ enum decal_e
 	DECAL_SMALLSCORCH2, // Small scorch mark
 	DECAL_SMALLSCORCH3, // Small scorch mark
 	DECAL_MOMMABIRTH,	// Big momma birth splatter
+	// ############ hu3lifezado ############ //
+	// Sprites para usar na arma de pichacao (ficam no decals.wad. Os de HUD estao no hud.txt)
+	// Insira novos decals no final! Nao mexa na ordem! kkkk
 	DECAL_MOMMASPLAT,
+	DECAL_PRETO,
+	DECAL_BRANCO,
+	DECAL_VERMELHO,
+	DECAL_ROSA,
+	DECAL_ROXO,
+	DECAL_AZUL_FORTE,
+	DECAL_AZUL_FRACO,
+	DECAL_VERDE,
+	DECAL_AMARELO,
+	DECAL_LARANJA,
+	DECAL_FUNDOBRANCO,
+	DECAL_FUNDOPRETO,
+	DECAL_CARLOSADAO,
+	// ############ //
 };
 
 typedef struct

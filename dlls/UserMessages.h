@@ -55,4 +55,9 @@ inline int gmsgStatusValue = 0;
 
 inline int gmsgWeapons = 0;
 
+// ############ hu3lifezado ############ //
+// Cores da Latinha de Pichacao no HUD
+inline int gmsgHu3PicheColors = 0;
+// ############ //
+
 void LinkUserMessages();

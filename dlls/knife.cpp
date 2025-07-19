@@ -21,11 +21,27 @@
 
 #include "gamerules.h"
 
+// ############ hu3lifezado ############ //
+// Acesso ao networking
+#include "UserMessages.h"
+// ############ //
 
 #define KNIFE_BODYHIT_VOLUME 128
 #define KNIFE_WALLHIT_VOLUME 512
 
 LINK_ENTITY_TO_CLASS(weapon_knife, CKnife);
+
+
+// ############ hu3lifezado ############ //
+// Pixação
+const char *CKnife::pSelectionSounds[] =
+{
+	"weapons/spray_selection1.wav",
+	"weapons/spray_selection2.wav",
+	"weapons/spray_selection3.wav",
+	"weapons/spray_selection4.wav",
+};
+// ############ //
 
 void CKnife::Precache()
 {
@@ -33,13 +49,15 @@ void CKnife::Precache()
 	PRECACHE_MODEL("models/w_knife.mdl");
 	PRECACHE_MODEL("models/p_knife.mdl");
 
-	PRECACHE_SOUND("weapons/knife1.wav");
-	PRECACHE_SOUND("weapons/knife2.wav");
-	PRECACHE_SOUND("weapons/knife3.wav");
-	PRECACHE_SOUND("weapons/knife_hit_flesh1.wav");
-	PRECACHE_SOUND("weapons/knife_hit_flesh2.wav");
-	PRECACHE_SOUND("weapons/knife_hit_wall1.wav");
-	PRECACHE_SOUND("weapons/knife_hit_wall2.wav");
+	// ############ hu3lifezado ############ //
+	// Alguns audios foram removidos e os seguintes renomeados
+	PRECACHE_SOUND("weapons/spray_hit_flesh1.wav");
+	PRECACHE_SOUND("weapons/spray_hit_flesh2.wav");
+	PRECACHE_SOUND("weapons/spray_hit_wall1.wav");
+	PRECACHE_SOUND("weapons/spray_hit_wall2.wav");
+	PRECACHE_SOUND("weapons/spray_eupichavasim.wav");
+	PRECACHE_SOUND_ARRAY(pSelectionSounds);
+	// ############ //
 
 	m_usKnife = PRECACHE_EVENT(1, "events/knife.sc");
 }
@@ -48,20 +66,42 @@ void CKnife::Spawn()
 {
 	Precache();
 
-	m_iId = WEAPON_KNIFE;
+	m_iId = WEAPON_KNIFE; 
 
 	SET_MODEL(edict(), "models/w_knife.mdl");
 
 	m_iClip = WEAPON_NOCLIP;
+
+
+	// ############ hu3lifezado ############ //
+	// Tempo para controlar mudanca de cor no botao secundario do mouse
+	m_nextcolorchange = 0;
+	// Tempo que quando ultrapassado forca a rechecagem do primeiro acerto
+	m_nextfirsthit = 0;
+	// Tempo para o proximo som de spray aplicado em parede
+	m_nextsprayonwallsound = 0;
+	// ############ hu3lifezado ############ //
+	// Inicializo a selecao de cores na primeira cor
+#ifndef CLIENT_DLL
+	for (int i = 0; i <= 64; i++)
+		hu3_spray_color[i] = 1;
+#else
+	hu3_spray_color[1] = 1;
+#endif
+	// ############ //
 
 	FallInit();
 }
 
 bool CKnife::Deploy()
 {
-	return DefaultDeploy(
-		"models/v_knife.mdl", "models/p_knife.mdl",
-		KNIFE_DRAW, "crowbar");
+	// ############ hu3lifezado ############ //
+	// Tempo entre chamadas HandleAnimationAndSound()
+#ifndef CLIENT_DLL
+	m_nextthink = gpGlobals->time + 0.1;
+#endif
+	return DefaultDeploy("models/v_knife.mdl", "models/p_knife.mdl", KNIFE_DRAW, "crowbar");
+	// ############ //
 }
 
 void CKnife::Holster()
@@ -71,171 +111,156 @@ void CKnife::Holster()
 	SendWeaponAnim(KNIFE_HOLSTER);
 }
 
+// ############ hu3lifezado ############ //
+// Pichar!
+// Funcionamentos
+// - Tenta colocar decals 40 vezes por segundo;
+// - Tenta aplicar danos, animacoes e sons em intervalos minimos de 1 segundo;
+// - Impede um novo ataque por 0.35s caso o jogador erre o alvo.
 void CKnife::PrimaryAttack()
 {
-	if (!Swing(true))
+	// Trace generico (obs: o codigo da arma todo pode acessar o resultado desse trace pela variavel "m_trHit")
+	bool bDidHit = TraceSomeShit();
+
+	// Cagar cores no mapa
+	if (bDidHit)
+		PlaceColor();
+
+	// Processamento de dano, animacoes e sons
+	if (m_nextthink < pev->nextthink)
 	{
-#ifndef CLIENT_DLL
-		SetThink(&CKnife::SwingAgain);
-		pev->nextthink = gpGlobals->time + 0.1;
-#endif
+		// Aplicamos as animacoes e, se necessario, sons
+		HandleAnimationAndSound();
+
+		// Dano
+		ApplyDamage();
+
+		if (bDidHit)
+			// Se acertou algo os proximos ataques dentro do intervalo de tempo a seguir nao podem ser considerados o primeiro de uma sequencia deles
+			m_nextfirsthit = gpGlobals->time + 0.35;
+		else
+			// Caso contrario eh necessario esperar um tempo ate poder dar o proximo ataque
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.35);
+
+		// Tempo entre chamadas do HandleAnimationAndSound()
+		m_nextthink = gpGlobals->time + 0.1;
 	}
+
+	// Delay caso o player esteja utilizando os decals de fundo ou de assinatura
+	int index;
+#ifndef CLIENT_DLL
+	CBaseEntity *hu3Player = (CBaseEntity *)m_pPlayer;
+	index = hu3Player->entindex();
+#else
+	index = 1;
+#endif
+	if (hu3_spray_color[index] > 10)
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+
+	// Tempo minimo entre chamadas do PrimaryAttack()
+	pev->nextthink = gpGlobals->time + 0.0025; // Tempo para o resto dos casos (rapido!)
 }
 
-void FindHullIntersection2(const Vector& vecSrc, TraceResult& tr, const Vector& mins, const Vector& maxs, edict_t* pEntity)
+// Trocar as cores
+void CKnife::SecondaryAttack()
 {
-	int i, j, k;
-	float distance;
-	const Vector* minmaxs[2] = {&mins, &maxs};
-	TraceResult tmpTrace;
-	Vector vecHullEnd = tr.vecEndPos;
-	Vector vecEnd;
-
-	distance = 1e6f;
-
-	vecHullEnd = vecSrc + ((vecHullEnd - vecSrc) * 2);
-	UTIL_TraceLine(vecSrc, vecHullEnd, dont_ignore_monsters, pEntity, &tmpTrace);
-	if (tmpTrace.flFraction < 1.0)
-	{
-		tr = tmpTrace;
+	// Verifica o tempo para sabermos se eh possivel mudar a cor
+	if (m_nextcolorchange > gpGlobals->time)
 		return;
-	}
 
-	for (i = 0; i < 2; i++)
+	// Pego o index que guarda a selecao de cores
+	int index;
+#ifndef CLIENT_DLL
+	CBaseEntity *hu3Player = (CBaseEntity *)m_pPlayer;
+	index = hu3Player->entindex();
+#else
+	index = 1;
+#endif
+
+	// 10 cores + 2 fundos + 1 Carlos Adao no Decals.cpp
+	if (hu3_spray_color[index] < 13)
+		hu3_spray_color[index] = hu3_spray_color[index] + 1;
+	else
+		hu3_spray_color[index] = 1;
+
+	// Atualizo a selecao no HUD
+#ifndef CLIENT_DLL
+	MESSAGE_BEGIN(MSG_ONE, gmsgHu3PicheColors, NULL, m_pPlayer->pev);
+	WRITE_BYTE(hu3_spray_color[index]);
+	MESSAGE_END();
+#endif
+
+	// Som de balancar a latinha
+	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, RANDOM_SOUND_ARRAY(pSelectionSounds), 1, ATTN_IDLE, 0, PITCH_NORM);
+
+	// Animacao e seu tempo:
+	SendWeaponAnim(KNIFE_SELECTION);
+
+	// Faz a mudanca de cor ficar desativada durante tempo da animacao
+	m_nextcolorchange = gpGlobals->time + 0.35;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.35);
+
+	// Idle tambem so volta depois desse tempo
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.35;
+
+	return;
+}
+// ############ //
+
+
+void CKnife::ApplyDamage()
+{
+#ifndef CLIENT_DLL
+	CBaseEntity *pEntity = CBaseEntity::Instance(m_trHit.pHit);
+
+	if (pEntity)
 	{
-		for (j = 0; j < 2; j++)
+		ClearMultiDamage();
+		if((m_flNextPrimaryAttack + 1 < UTIL_WeaponTimeBase()) || g_pGameRules->IsMultiplayer())
 		{
-			for (k = 0; k < 2; k++)
-			{
-				vecEnd.x = vecHullEnd.x + minmaxs[i]->x;
-				vecEnd.y = vecHullEnd.y + minmaxs[j]->y;
-				vecEnd.z = vecHullEnd.z + minmaxs[k]->z;
-
-				UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, pEntity, &tmpTrace);
-				if (tmpTrace.flFraction < 1.0)
-				{
-					float thisDistance = (tmpTrace.vecEndPos - vecSrc).Length();
-					if (thisDistance < distance)
-					{
-						tr = tmpTrace;
-						distance = thisDistance;
-					}
-				}
-			}
+			// first swing does full damage
+			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgKnife, gpGlobals->v_forward, &m_trHit, DMG_CLUB);
 		}
+		else
+		{
+			// subsequent swings do half
+			pEntity->TraceAttack(m_pPlayer->pev, gSkillData.plrDmgKnife / 2, gpGlobals->v_forward, &m_trHit, DMG_CLUB);
+		}
+
+		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 	}
+#endif
 }
 
-bool CKnife::Swing(const bool bFirst)
+void CKnife::HandleAnimationAndSound()
 {
-	bool bDidHit = false;
+	// ############ hu3lifezado ############ //
+	// !!! Parte de tracing foi movida para a funcao TraceSomeShit()
 
-	TraceResult tr;
+	// Caso o ataque em questao seja o primeiro de uma sequencia, devemos rodar a funcao de evento
+	if (m_nextfirsthit < gpGlobals->time)
+		PLAYBACK_EVENT_FULL(FEV_NOTHOST, m_pPlayer->edict(), m_usKnife, 0.0, g_vecZero, g_vecZero, 0, 0, 0, 0.0, 0, 0.0);
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
-	Vector vecSrc = m_pPlayer->GetGunPosition();
-	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
-
-	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
-
-#ifndef CLIENT_DLL
-	if (tr.flFraction >= 1.0)
+	// Animacoes simplificadas:
+	switch (((m_iSwing++) % 2) + 1)
 	{
-		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, ENT(m_pPlayer->pev), &tr);
-		if (tr.flFraction < 1.0)
-		{
-			// Calculate the point of intersection of the line (or hull) and the object we hit
-			// This is and approximation of the "best" intersection
-			CBaseEntity* pHit = CBaseEntity::Instance(tr.pHit);
-			if (!pHit || pHit->IsBSPModel())
-				FindHullIntersection2(vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_pPlayer->edict());
-			vecEnd = tr.vecEndPos; // This is the point on the actual surface (the hull could have hit space)
-		}
-	}
-#endif
-
-	if (bFirst)
-	{
-		PLAYBACK_EVENT_FULL(FEV_NOTHOST, m_pPlayer->edict(), m_usKnife,
-			0.0, g_vecZero, g_vecZero, 0, 0, 0,
-			0.0, 0, 0.0);
-	}
-
-
-	if (tr.flFraction >= 1.0)
-	{
-		if (bFirst)
-		{
-			// miss
-			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-
-			// player "shoot" animation
-			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-		}
-	}
-	else
-	{
-		switch (((m_iSwing++) % 2) + 1)
-		{
 		case 0:
-			SendWeaponAnim(KNIFE_ATTACK1);
-			break;
+			SendWeaponAnim(KNIFE_ATTACK1); break;
 		case 1:
-			SendWeaponAnim(KNIFE_ATTACK2HIT);
-			break;
+			SendWeaponAnim(KNIFE_ATTACK2HIT); break;
 		case 2:
-			SendWeaponAnim(KNIFE_ATTACK3HIT);
-			break;
-		}
+			SendWeaponAnim(KNIFE_ATTACK3HIT); break;
+	}
 
-		// player "shoot" animation
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-
-#ifndef CLIENT_DLL
-
-		// hit
-		bDidHit = true;
-		CBaseEntity* pEntity = CBaseEntity::Instance(tr.pHit);
-
-		if (pEntity)
-		{
-			ClearMultiDamage();
-
-			float damage = gSkillData.plrDmgKnife;
-
-			int damageTypes = DMG_CLUB;
-
-			if (g_pGameRules->IsMultiplayer())
-			{
-				//TODO: This code assumes the target is a player and not some NPC. Rework it to support NPC backstabbing.
-				UTIL_MakeVectors(pEntity->pev->v_angle);
-
-				const Vector targetRightDirection = gpGlobals->v_right;
-
-				UTIL_MakeVectors(m_pPlayer->pev->v_angle);
-
-				const Vector ownerForwardDirection = gpGlobals->v_forward;
-
-				//In multiplayer the knife can backstab targets.
-				const bool isBehindTarget = CrossProduct(targetRightDirection, ownerForwardDirection).z > 0;
-
-				if (isBehindTarget)
-				{
-					damage *= 100;
-					damageTypes |= DMG_NEVERGIB;
-				}
-			}
-
-			pEntity->TraceAttack(m_pPlayer->pev, damage, gpGlobals->v_forward, &tr, damageTypes);
-
-			ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
-		}
-
-#endif
-
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
+	// Animacao "de tiro" do jogador
+	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 #ifndef CLIENT_DLL
+	// Sons mais abaixo...
+	// ############ //
+	if (m_trHit.flFraction < 1.0)
+	{
+		CBaseEntity *pEntity = CBaseEntity::Instance(m_trHit.pHit);
 
 		// play thwack, smack, or dong sound
 		float flVol = 1.0;
@@ -245,19 +270,26 @@ bool CKnife::Swing(const bool bFirst)
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 			{
+				// ############ hu3lifezado ############ //
+				// Novos nomes de audios
 				// play thwack or smack sound
 				switch (RANDOM_LONG(0, 1))
 				{
 				case 0:
-					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh1.wav", 1, ATTN_NORM);
+					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/spray_hit_flesh1.wav", 1, ATTN_NORM);
 					break;
 				case 1:
-					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_flesh2.wav", 1, ATTN_NORM);
+					EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/spray_hit_flesh2.wav", 1, ATTN_NORM);
 					break;
 				}
+				// ############ //
+
 				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 				if (!pEntity->IsAlive())
-					return true;
+					// ############ hu3lifezado ############ //
+					// Nao retorna mais nada
+					return;
+					// ############ //
 				else
 					flVol = 0.1;
 
@@ -268,51 +300,140 @@ bool CKnife::Swing(const bool bFirst)
 		// play texture hit sound
 		// UNDONE: Calculate the correct point of intersection when we hit with the hull instead of the line
 
-		if (bHitWorld)
+		// ############ hu3lifezado ############ //
+		// Novos nomes de audios e adicionado tempo de espera
+		if (m_nextsprayonwallsound < gpGlobals->time)
 		{
-			float fvolbar = TEXTURETYPE_PlaySound(&tr, vecSrc, vecSrc + (vecEnd - vecSrc) * 2, BULLET_PLAYER_CROWBAR);
-
-			if (g_pGameRules->IsMultiplayer())
+			if (bHitWorld)
 			{
 				// override the volume here, cause we don't play texture sounds in multiplayer,
 				// and fvolbar is going to be 0 from the above call.
+				float fvolbar = 1;
 
-				fvolbar = 1;
+				// Novos nomes de audios
+				// also play crowbar strike
+				switch (RANDOM_LONG(0, 1))
+				{
+				case 0:
+					EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/spray_hit_wall1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
+					break;
+				case 1:
+					EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/spray_hit_wall2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
+					break;
+				}
+
+				// Nao tem mais utilidade aqui, comentado...
+				// delay the decal a bit
+				//m_trHit = tr;
 			}
 
-			// also play crowbar strike
-			switch (RANDOM_LONG(0, 1))
-			{
-			case 0:
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall1.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
-			case 1:
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hit_wall2.wav", fvolbar, ATTN_NORM, 0, 98 + RANDOM_LONG(0, 3));
-				break;
-			}
-
-			// delay the decal a bit
-			m_trHit = tr;
+			// Delay ate a proxima reproducao de som. Deve ser o tempo do som menos o atraso de entrada
+			// em HandleAnimationAndSound() feito em PrimaryAttack()
+			m_nextsprayonwallsound = gpGlobals->time + 0.3;
 		}
 
 		m_pPlayer->m_iWeaponVolume = flVol * KNIFE_WALLHIT_VOLUME;
 
-		SetThink(&CKnife::Smack);
-		pev->nextthink = gpGlobals->time + 0.2;
-#endif
+		// Codigo de controle de frames tirado daqui e refeito no PrimaryAttack()
+		// ############ //
 	}
-	return bDidHit;
+#endif
 }
 
-void CKnife::SwingAgain()
+// ############ hu3lifezado ############ //
+// Movi a parte de tracing para ca para ter mais controle e disponibilidade
+bool CKnife::TraceSomeShit()
 {
-	Swing(false);
+	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+	Vector vecSrc = m_pPlayer->GetGunPosition();
+	Vector vecEnd = vecSrc + gpGlobals->v_forward * 120;
+
+	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &m_trHit);
+
+#ifndef CLIENT_DLL
+	if (m_trHit.flFraction >= 1.0)
+		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, ENT(m_pPlayer->pev), &m_trHit);
+#endif
+
+	if (m_trHit.pHit)
+		return true;
+
+	return false;
 }
 
-void CKnife::Smack()
+// Posicionar ponto de cor
+void CKnife::PlaceColor()
 {
-	DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR);
+	TraceResult * pTrace = &m_trHit;
+
+	if (!pTrace->pHit)
+		return;
+
+#ifndef CLIENT_DLL
+	// Pega a entidade, a superficie acertada
+	CBaseEntity* pHit = CBaseEntity::Instance(pTrace->pHit);
+
+	// A entidade eh valida?
+	if (!UTIL_IsValidEntity(pHit->edict()))
+		return;
+
+	// A entidade eh mapa ou objeto puxavel?
+	if (pHit->pev->solid == SOLID_BSP || pHit->pev->movetype == MOVETYPE_PUSHSTEP)
+	{
+		// Desenhar decal sobre essa entidade
+		// Os decals estao dentro do arquivo decals.wad e sao listados em Decals.cpp
+		CBaseEntity *hu3Player = (CBaseEntity *)m_pPlayer;
+		UTIL_DecalTrace(pTrace, 41 + hu3_spray_color[hu3Player->entindex()]);
+	}
+#endif
 }
+
+// Animacoes e sons de idle
+void CKnife::WeaponIdle()
+{
+	int iAnim;
+	float flRand = RANDOM_FLOAT(0, 1);
+
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
+		return;
+
+	// 3% de chance de tocar EU PICHAVA SIM E CURTIA MUITO!
+	if (RANDOM_LONG(0, 99) >= 97)
+	{
+		iAnim = KNIFE_PICHAVASIM;
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/spray_eupichavasim.wav", RANDOM_FLOAT(0.7, 0.8), ATTN_NORM);
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 8;
+
+		// Impedir a arma de funcionar por pouco tempo para evitar que o jogador corte bruscamente a animacao
+		m_nextcolorchange = gpGlobals->time + 4;
+		m_flNextPrimaryAttack = GetNextAttackDelay(2.0);
+	}
+	// 97% de chance de executar essa parte
+	else
+	{
+		// 15% de chance de olhar o rotulo caso o jogador nao tenha acabado de trocar a cor da arma
+		if (flRand <= 0.15 && m_nextcolorchange + 0.35 <= gpGlobals->time)
+		{
+			iAnim = KNIFE_IDLE1;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
+		}
+		// 50% de chance para segurar normalmente mas com algum movimento - Tipo 1
+		else if (flRand <= 0.50)
+		{
+			iAnim = KNIFE_IDLE2;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat(m_pPlayer->random_seed, 10, 15);
+		}
+		// 35% de chance para segurar normalmente mas com algum movimento - Tipo 2
+		else
+		{
+			iAnim = KNIFE_IDLE3;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3;
+		}
+	}
+
+	SendWeaponAnim(iAnim);
+}
+// ############ //
 
 int CKnife::iItemSlot()
 {
