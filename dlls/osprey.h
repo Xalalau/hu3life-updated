@@ -1,3 +1,6 @@
+// ############ hu3lifezado ############ //
+// Cabeçalho exposto
+
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
@@ -95,3 +98,5 @@ public:
 	int m_iDoLeftSmokePuff;
 	int m_iDoRightSmokePuff;
 };
+
+// ############ //

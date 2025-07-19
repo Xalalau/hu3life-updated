@@ -20,7 +20,10 @@
 #include "soundent.h"
 #include "effects.h"
 #include "customentity.h"
+// ############ hu3lifezado ############ //
+// Cabeçalho exposto
 #include "osprey.h"
+// ############ //
 
 LINK_ENTITY_TO_CLASS(monster_osprey, COsprey);
 
