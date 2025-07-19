@@ -51,3 +51,16 @@ inline cvar_t* g_psv_aim;
 inline cvar_t* g_psv_allow_autoaim;
 inline cvar_t* g_footsteps;
 inline cvar_t* g_psv_cheats;
+
+// ############ hu3lifezado ############ //
+// Portado do HLEnhanced
+#define DECLARE_SKILL_CVARS( name )					\
+cvar_t	sk_##name##1 = { "sk_" #name "1", "0" };	\
+cvar_t	sk_##name##2 = { "sk_" #name "2", "0" };	\
+cvar_t	sk_##name##3 = { "sk_" #name "3", "0" }
+
+#define REGISTER_SKILL_CVARS( name )	\
+CVAR_REGISTER( &sk_##name##1 );			\
+CVAR_REGISTER( &sk_##name##2 );			\
+CVAR_REGISTER( &sk_##name##3 )
+// ############ //

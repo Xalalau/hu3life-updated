@@ -415,6 +415,12 @@ cvar_t sk_scientist_heal1 = {"sk_scientist_heal1", "0"};
 cvar_t sk_scientist_heal2 = {"sk_scientist_heal2", "0"};
 cvar_t sk_scientist_heal3 = {"sk_scientist_heal3", "0"};
 
+// ############ hulifezado ############ //
+// Novas armas
+// Desert Eagle Round
+DECLARE_SKILL_CVARS(plr_eagle);
+DECLARE_SKILL_CVARS(plr_eagle_mp);
+// ############ //
 
 // monster damage adjusters
 cvar_t sk_monster_head1 = {"sk_monster_head1", "2"};
@@ -877,6 +883,13 @@ void GameDLLInit()
 	CVAR_REGISTER(&sk_hornet_dmg1); // {"sk_hornet_dmg1","0"};
 	CVAR_REGISTER(&sk_hornet_dmg2); // {"sk_hornet_dmg2","0"};
 	CVAR_REGISTER(&sk_hornet_dmg3); // {"sk_hornet_dmg3","0"};
+
+	// ############ hulifezado ############ //
+	// Novas armas
+	// Desert Eagle Round
+	REGISTER_SKILL_CVARS(plr_eagle);
+	REGISTER_SKILL_CVARS(plr_eagle_mp);
+	// ############ //
 
 	// HEALTH/SUIT CHARGE DISTRIBUTION
 	CVAR_REGISTER(&sk_suitcharger1);

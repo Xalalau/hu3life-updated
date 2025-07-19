@@ -43,12 +43,15 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/crossbow.o \
 	$(HLDLL_OBJ_DIR)/crowbar.o \
 	$(HLDLL_OBJ_DIR)/defaultai.o \
+	$(HLDLL_OBJ_DIR)/deserteagle.o \
 	$(HLDLL_OBJ_DIR)/doors.o \
 	$(HLDLL_OBJ_DIR)/effects.o \
 	$(HLDLL_OBJ_DIR)/egon.o \
 	$(HLDLL_OBJ_DIR)/explode.o \
 	$(HLDLL_OBJ_DIR)/flyingcrowbar.o \
 	$(HLDLL_OBJ_DIR)/flyingmonster.o \
+	$(HLDLL_OBJ_DIR)/flyingtouros.o \
+	$(HLDLL_OBJ_DIR)/flyingtourossecondary.o \
 	$(HLDLL_OBJ_DIR)/func_break.o \
 	$(HLDLL_OBJ_DIR)/func_tank.o \
 	$(HLDLL_OBJ_DIR)/game.o \

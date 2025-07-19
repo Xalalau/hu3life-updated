@@ -88,7 +88,10 @@ public:
 #define SNARK_WEIGHT 5
 #define SATCHEL_WEIGHT -10
 #define TRIPMINE_WEIGHT -10
-
+// ############ hulifezado ############ //
+// Novas armas
+#define DEAGLE_WEIGHT 15
+// ############ //
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY 100
@@ -140,6 +143,10 @@ public:
 #define TRIPMINE_DEFAULT_GIVE 1
 #define SNARK_DEFAULT_GIVE 5
 #define HIVEHAND_DEFAULT_GIVE 8
+// ############ hulifezado ############ //
+// Novas armas
+#define DESERT_EAGLE_DEFAULT_GIVE 17
+// ############ //
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE 20
@@ -151,7 +158,6 @@ public:
 #define AMMO_BUCKSHOTBOX_GIVE 12
 #define AMMO_CROSSBOWCLIP_GIVE CROSSBOW_MAX_CLIP
 #define AMMO_RPGCLIP_GIVE RPG_MAX_CLIP
-#define AMMO_URANIUMBOX_GIVE 20
 #define AMMO_SNARKBOX_GIVE 5
 
 // bullet types
@@ -167,6 +173,11 @@ typedef enum
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
 	BULLET_MONSTER_12MM,
+
+	// ############ hulifezado ############ //
+	// Novas armas
+	BULLET_PLAYER_DEAGLE,
+	// ############ //
 } Bullet;
 
 
@@ -621,6 +632,39 @@ private:
 							 // allow the crowbar to hit the user.
 
 	unsigned short m_usCrowbar;
+};
+
+class CFlyingTouros : public CBasePlayerWeapon
+{
+public:
+	void Spawn();
+	void Precache();
+	void BubbleThink();
+	void SpinTouch(CBaseEntity *pOther);
+	CBasePlayer *m_pPlayer;
+
+private:
+	EHANDLE m_hOwner;        // Original owner is stored here so we can
+							 // allow the crowbar to hit the user.
+
+	unsigned short m_usCrowbar;
+};
+
+class CFlyingTourosSecondary : public CBasePlayerWeapon
+{
+public:
+	void Spawn();
+	void Precache();
+	void BubbleThink();
+	void SpinTouch(CBaseEntity *pOther);
+	void SetQuality(int quality, int m_iClip);
+	CBasePlayer *m_pPlayer;
+
+private:
+	int quality;
+	int iClip;
+	EHANDLE m_hOwner;        // Original owner is stored here so we can
+							 // allow the Touros to hit the user.
 };
 
 enum python_e
@@ -1382,4 +1426,85 @@ public:
 
 private:
 	unsigned short m_usSnarkFire;
+};
+
+enum DesertEagleAnim
+{
+	DEAGLE_IDLE1 = 0,
+	DEAGLE_IDLE2,
+	DEAGLE_IDLE3,
+	DEAGLE_IDLE4,
+	DEAGLE_IDLE5,
+	DEAGLE_SHOOT,
+	DEAGLE_SHOOT_EMPTY,
+	DEAGLE_RELOAD_NOSHOT,
+	DEAGLE_RELOAD,
+	DEAGLE_DRAW,
+	DEAGLE_HOLSTER
+};
+
+class CDesertEagle : public CBasePlayerWeapon
+{
+public:
+	void Spawn() override;
+	void Precache() override;
+	int iItemSlot() override { return 2; }
+	bool GetItemInfo(ItemInfo* p) override;
+
+	bool Deploy() override;
+	void Holster() override;
+	void WeaponIdle() override;
+	void PrimaryAttack() override;
+	void SecondaryAttack() override;
+	void Reload() override;
+
+	// ############ hu3lifezado ############ //
+	// Chance da arma quebrar e sair voando
+	bool RandomlyBreak();
+	// Chance da arma travar e nao atirar mais
+	bool RandomlyJammed();
+	// Definir a qualidade da arma
+	void SetQuality();
+	// Dano por estilhacos
+	void ShrapnelDamage(int chance, int min_damage, int max_damage);
+	// Perder toda a municao
+	bool RandomlyLostAllAmmo();
+	// ############ //
+
+	bool UseDecrement() override
+	{
+#if defined(CLIENT_WEAPONS)
+		return true;
+#else
+		return false;
+#endif
+	}
+
+private:
+	void UpdateLaser();
+
+private:
+	int m_iShell;
+	unsigned short m_usFireEagle;
+
+	// ############ hu3lifezado ############ //
+	// Tempo ate processar a nova chance da arma atirar sozinha
+	float m_nextbadshootchance;
+	// Nos nao podemos imprimir mensagens assim que o jogo comeca
+	float m_waitforthegametobeready;
+	// Arma travada
+	bool m_jammedweapon;
+	// Imprimir mensagem quando o jogador coleta a arma
+	bool m_firstmessage;
+	// Comando para copiarmos valores de qualidade do server para o client
+	cvar_t	*hu3_touros_gambiarra_qualidade;
+	// Cada defeito da arma tem um bônus que é adicionado de 0 até 100% dependendo dessa qualidade 9 até 1;
+	float m_qualitypercentageeffect;
+
+public:
+	// Qualidade da arma (de 1 ate 9, nunca 10)
+	int m_quality;
+	// Recuperar numero inicial de balas / Controlar retirada de balas no caso de arma jogada
+	int m_iClip2;
+	// ############ //
 };

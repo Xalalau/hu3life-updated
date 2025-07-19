@@ -1486,6 +1486,10 @@ void CBaseEntity::FireBullets(unsigned int cShots, Vector vecSrc, Vector vecDirS
 			case BULLET_MONSTER_MP5:
 			case BULLET_MONSTER_9MM:
 			case BULLET_MONSTER_12MM:
+			// ############ hulifezado ############ //
+			// Novas armas
+			case BULLET_PLAYER_DEAGLE:
+			// ############ //
 			default:
 				MESSAGE_BEGIN(MSG_PAS, SVC_TEMPENTITY, vecTracerSrc);
 				WRITE_BYTE(TE_TRACER);
@@ -1635,6 +1639,13 @@ Vector CBaseEntity::FireBulletsPlayer(unsigned int cShots, Vector vecSrc, Vector
 				case BULLET_PLAYER_357:
 					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET);
 					break;
+
+				// ############ hulifezado ############ //
+				// Novas armas
+				case BULLET_PLAYER_DEAGLE:
+					pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgDeagle, vecDir, &tr, DMG_BULLET);
+					break;
+				// ############ //
 
 				case BULLET_NONE: // FIX
 					pEntity->TraceAttack(pevAttacker, 50, vecDir, &tr, DMG_CLUB);

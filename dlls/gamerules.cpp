@@ -346,6 +346,11 @@ void CGameRules::RefreshSkillData()
 	// PLAYER HORNET
 	gSkillData.plrDmgHornet = GetSkillCvar("sk_plr_hornet_dmg");
 
+	// ############ hulifezado ############ //
+	// Novas armas
+	// Desert Eagle
+	gSkillData.plrDmgDeagle = GetSkillCvar( "sk_plr_eagle" );
+	// ############  //
 
 	// HEALTH/CHARGE
 	gSkillData.suitchargerCapacity = GetSkillCvar("sk_suitcharger");

@@ -110,7 +110,11 @@ struct skilldata_t
 	float plrDmgHandGrenade;
 	float plrDmgSatchel;
 	float plrDmgTripmine;
-
+	// ############ hulifezado ############ //
+	// Novas armas
+	float plrDmgDeagle;
+	// ############ //
+	
 	// weapons shared by monsters
 	float monDmg9MM;
 	float monDmgMP5;

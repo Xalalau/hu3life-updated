@@ -64,7 +64,10 @@ CHandGrenade g_HandGren;
 CSatchel g_Satchel;
 CTripmine g_Tripmine;
 CSqueak g_Snark;
-
+// ############ hulifezado ############ //
+// Novas armas
+CDesertEagle g_DesertEagle;
+// ############ //
 
 /*
 ======================
@@ -464,6 +467,10 @@ void HUD_InitClientWeapons()
 	HUD_PrepEntity(&g_Satchel, &player);
 	HUD_PrepEntity(&g_Tripmine, &player);
 	HUD_PrepEntity(&g_Snark, &player);
+	// ############ hulifezado ############ //
+	// Novas armas
+	HUD_PrepEntity(&g_DesertEagle, &player);
+	// ############ //
 }
 
 /*
@@ -586,6 +593,13 @@ void HUD_WeaponsPostThink(local_state_s* from, local_state_s* to, usercmd_t* cmd
 	case WEAPON_SNARK:
 		pWeapon = &g_Snark;
 		break;
+
+	// ############ hulifezado ############ //
+	// Novas armas
+	case WEAPON_DESERT_EAGLE:
+		pWeapon = &g_DesertEagle;
+		break;
+	// ############ //
 	}
 
 	// Store pointer to our destination entity_state_t so we can get our origin, etc. from it

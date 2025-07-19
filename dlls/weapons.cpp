@@ -177,6 +177,10 @@ void DecalGunshot(TraceResult* pTrace, int iBulletType)
 		case BULLET_MONSTER_MP5:
 		case BULLET_PLAYER_BUCKSHOT:
 		case BULLET_PLAYER_357:
+		// ############ hulifezado ############ //
+		// Novas armas
+		case BULLET_PLAYER_DEAGLE:
+		// ############ //
 		default:
 			// smoke and decal
 			UTIL_GunshotDecalTrace(pTrace, DamageDecal(pEntity, DMG_BULLET));
@@ -342,6 +346,11 @@ void W_Precache()
 
 	// hornetgun
 	UTIL_PrecacheOtherWeapon("weapon_hornetgun");
+
+	// ############ hulifezado ############ //
+	// Novas armas
+	UTIL_PrecacheOtherWeapon("weapon_eagle");
+	// ############
 
 	if (g_pGameRules->IsDeathmatch())
 	{
@@ -1240,6 +1249,38 @@ void CWeaponBox::Touch(CBaseEntity* pOther)
 						}
 					}
 				}
+
+				// ARMA TOUROS
+				CDesertEagle * pItem_hu3 = (CDesertEagle *)pItem;
+				if (pItem_hu3->m_iId == WEAPON_DESERT_EAGLE && pItem_hu3->m_quality != 0)
+				{
+					int j;
+					// Nao dar a arma para o jogador se ele ja tiver ela
+					for (j = 0; j < MAX_WEAPON_SLOTS; j++)
+					{
+						CBasePlayerItem *it = pPlayer->m_rgpPlayerItems[j];
+
+						while (it != NULL)
+						{
+							if (it->m_iId == WEAPON_DESERT_EAGLE)
+								return;
+
+							it = it->m_pNext;
+						}
+					}
+					// Copiar valores inicias de qualidade e balas da Touros (server -> client)
+					// Qualidade
+					char command[35] = "hu3_touros_qualidade_inicial ";
+					char value[2];
+					snprintf(value, 2, "%d", pItem_hu3->m_quality);
+					strcat(strcat(command, value), "\n");
+					CLIENT_COMMAND(pPlayer->edict(), command);
+					// Municao primaria
+					strcpy(command, "hu3_touros_municao_inicial ");
+					snprintf(value, 2, "%d", pItem_hu3->m_iClip2);
+					strcat(strcat(command, value), "\n");
+					CLIENT_COMMAND(pPlayer->edict(), command);
+				}
 				// ############ //
 
 				m_rgpPlayerItems[i] = m_rgpPlayerItems[i]->m_pNext; // unlink this weapon from the box
@@ -1312,6 +1353,13 @@ bool CWeaponBox::PackWeapon(CBasePlayerItem* pWeapon)
 	if (pWeapon->m_iId == WEAPON_CROWBAR)
 	{
 		SET_MODEL(ENT(pev), "models/w_crowbar.mdl");
+	}
+
+	// Modelo para a Touros quebrada:
+	if (pWeapon->m_iId == WEAPON_DESERT_EAGLE)
+	{
+		SET_MODEL(ENT(pev), "models/w_desert_eagle.mdl");
+		pev->body = 1;
 	}
 	// ############ //
 

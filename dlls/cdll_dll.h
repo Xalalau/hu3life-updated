@@ -59,6 +59,11 @@ enum WeaponId
 	WEAPON_SATCHEL,
 	WEAPON_SNARK,
 
+	// ############ hulifezado ############ //
+	// Novas armas
+	WEAPON_DESERT_EAGLE,
+	// ############ //
+
 	WEAPON_SUIT = 31
 };
 

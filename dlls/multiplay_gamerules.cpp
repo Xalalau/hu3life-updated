@@ -160,6 +160,11 @@ void CHalfLifeMultiplay::RefreshSkillData()
 
 	// hornet
 	gSkillData.plrDmgHornet = 10;
+
+	// ############ hulifezado ############ //
+	// Novas armas
+	gSkillData.plrDmgDeagle = 2; // Dano base, o real usa qualidade da arma
+	// ############ //
 }
 
 //=========================================================
