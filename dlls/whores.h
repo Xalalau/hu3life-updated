@@ -95,3 +95,18 @@ private:
 	float m_healTime;
 	float m_fearTime;
 };
+
+class CGloriousBreasts : public CBitch1
+{
+public:
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
+
+	void Spawn();
+
+private:
+	float m_painTime;
+	float m_healTime;
+	float m_fearTime;
+};
