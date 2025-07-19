@@ -154,8 +154,10 @@ IMPLEMENT_SAVERESTORE(CBMortar, CBaseEntity);
 // Attack distance constants
 #define BIG_ATTACKDIST 170
 #define BIG_MORTARDIST 800
-#define BIG_MAXCHILDREN 20 // Max # of live headcrab children
-
+// ############ hu3lifezado ############ //
+// Mais aliens (20)
+#define BIG_MAXCHILDREN 100 // Max # of live headcrab children
+// ############ //
 
 #define bits_MEMORY_CHILDPAIR (bits_MEMORY_CUSTOM1)
 #define bits_MEMORY_ADVANCE_NODE (bits_MEMORY_CUSTOM2)
@@ -566,7 +568,10 @@ void CBigMomma::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDi
 			pev->dmgtime = gpGlobals->time;
 		}
 
-		flDamage = 0.1; // don't hurt the monster much, but allow bits_COND_LIGHT_DAMAGE to be generated
+		// ############ hu3lifezado ############ //
+		// O novo valor deixa viavel matarmos o Bicho Piruleta (0.1)
+		flDamage = 100;
+	   // ############ //
 	}
 	else if (gpGlobals->time > m_painSoundTime)
 	{
@@ -643,7 +648,10 @@ void CBigMomma::LaunchMortar()
 	m_mortarTime = gpGlobals->time + RANDOM_FLOAT(2, 15);
 
 	Vector startPos = pev->origin;
-	startPos.z += 180;
+	// ############ hu3lifezado ############ //
+	// A cagada de porra tem que sair da bunda dele (180)
+	startPos.z += 300;
+	// ############ //
 
 	EMIT_SOUND_DYN(edict(), CHAN_WEAPON, RANDOM_SOUND_ARRAY(pSackSounds), 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5, 5));
 	CBMortar* pBomb = CBMortar::Shoot(edict(), startPos, pev->movedir);
