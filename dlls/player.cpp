@@ -2940,8 +2940,9 @@ void CBasePlayer::Spawn()
 	// ############ hu3lifezado ############ //
 	// Inicializacao do sprite de mira em terceira pessoa
 	hu3_cam_crosshair = 0;
+	// Era 100
+	pev->health = 169;
 	// ############ //
-	pev->health = 100;
 	pev->armorvalue = 0;
 	pev->takedamage = DAMAGE_AIM;
 	pev->solid = SOLID_SLIDEBOX;
