@@ -393,6 +393,9 @@
     <ClCompile Include="..\..\dlls\pipewrench.cpp">
       <Filter>Source Files\dlls\weapons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\whores.cpp">
+      <Filter>Source Files\dlls\weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -500,6 +503,9 @@
     <ClInclude Include="..\..\dlls\schedule.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dlls\scientist.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\dlls\scripted.h">
       <Filter>Header Files\dlls</Filter>
     </ClInclude>
@@ -532,6 +538,9 @@
     </ClInclude>
     <ClInclude Include="..\..\dlls\vector.h">
       <Filter>Header Files\dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dlls\whores.h">
+      <Filter>Header Files\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\Platform.h">
       <Filter>Header Files\common</Filter>
