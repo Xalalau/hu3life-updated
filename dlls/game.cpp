@@ -421,6 +421,8 @@ cvar_t sk_scientist_heal3 = {"sk_scientist_heal3", "0"};
 DECLARE_SKILL_CVARS(plr_eagle);
 DECLARE_SKILL_CVARS(plr_eagle_mp);
 DECLARE_SKILL_CVARS(plr_knife);
+DECLARE_SKILL_CVARS(plr_pipewrench);
+DECLARE_SKILL_CVARS(plr_pipewrench_mp);
 // ############ //
 
 // monster damage adjusters
@@ -891,6 +893,8 @@ void GameDLLInit()
 	REGISTER_SKILL_CVARS(plr_eagle);
 	REGISTER_SKILL_CVARS(plr_eagle_mp);
 	REGISTER_SKILL_CVARS(plr_knife);
+	REGISTER_SKILL_CVARS(plr_pipewrench);
+	REGISTER_SKILL_CVARS(plr_pipewrench_mp);
 	// ############ //
 
 	// HEALTH/SUIT CHARGE DISTRIBUTION

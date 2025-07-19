@@ -56,6 +56,7 @@ void Game_HookEvents()
 	// ############ hulifezado ############ //
 	// Novas armas
 	gEngfuncs.pfnHookEvent("events/eagle.sc", EV_FireEagle);
-	gEngfuncs.pfnHookEvent( "events/knife.sc", EV_Knife);
+	gEngfuncs.pfnHookEvent("events/knife.sc", EV_Knife);
+	gEngfuncs.pfnHookEvent("events/pipewrench.sc", EV_Knife);
 	// ############
 }

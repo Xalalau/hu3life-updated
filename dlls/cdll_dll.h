@@ -63,6 +63,7 @@ enum WeaponId
 	// Novas armas
 	WEAPON_DESERT_EAGLE,
 	WEAPON_KNIFE,
+	WEAPON_PIPEWRENCH,
 	// ############ //
 
 	WEAPON_SUIT = 31

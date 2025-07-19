@@ -351,6 +351,7 @@ void W_Precache()
 	// Novas armas
 	UTIL_PrecacheOtherWeapon("weapon_eagle");
 	UTIL_PrecacheOtherWeapon("weapon_knife");
+	UTIL_PrecacheOtherWeapon("weapon_pipewrench");
 	// ############
 
 	if (g_pGameRules->IsDeathmatch())

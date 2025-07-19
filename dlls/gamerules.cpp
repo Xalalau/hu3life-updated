@@ -351,6 +351,7 @@ void CGameRules::RefreshSkillData()
 	// Desert Eagle
 	gSkillData.plrDmgDeagle = GetSkillCvar("sk_plr_eagle");
 	gSkillData.plrDmgKnife = GetSkillCvar("sk_plr_knife");
+	gSkillData.plrDmgPipewrench = GetSkillCvar("sk_plr_pipewrench");
 	// ############  //
 
 	// HEALTH/CHARGE

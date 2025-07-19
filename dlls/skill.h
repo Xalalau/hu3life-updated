@@ -114,6 +114,7 @@ struct skilldata_t
 	// Novas armas
 	float plrDmgDeagle;
 	float plrDmgKnife;
+	float plrDmgPipewrench;
 	// ############ //
 	
 	// weapons shared by monsters

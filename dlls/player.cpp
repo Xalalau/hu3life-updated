@@ -3651,6 +3651,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 		// Novas armas
 		GiveNamedItem("weapon_eagle");
 		GiveNamedItem("weapon_knife");
+		GiveNamedItem("weapon_pipewrench");
 		// ############ //
 
 		gEvilImpulse101 = false;
