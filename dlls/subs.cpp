@@ -700,4 +700,119 @@ void CPointCounter::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		m_iCount = 1;
 	}
 }
+
+/*
+HU3-LIFE point_cmd
+
+Entidade que executa comandos de console nos seguintes alvos:
+
+1) "clients" = em cada jogador;
+2) "server" = no servidor;
+4) "random client" = em um jogador qualquer.
+
+Ela eh ativada apenas por chamada de outras entidades (via target).
+Ela So funciona uma unica vez.
+*/
+
+class CPointCMD : public CPointEntity
+{
+public:
+	using BaseClass = CPointEntity;
+
+#ifndef CLIENT_DLL
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
+	void Spawn(void);
+
+	bool KeyValue(KeyValueData *pkvd);
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+	string_t m_command;		// Comando
+	string_t m_target;      // Alvo(s)
+};
+
+#ifndef CLIENT_DLL
+TYPEDESCRIPTION CPointCMD::m_SaveData[] =
+{
+	DEFINE_FIELD(CPointCMD, m_command, FIELD_STRING),
+	DEFINE_FIELD(CPointCMD, m_target, FIELD_STRING),
+};
+
+IMPLEMENT_SAVERESTORE(CPointCMD, CPointCMD::BaseClass);
+#endif
+
+LINK_ENTITY_TO_CLASS(point_cmd, CPointCMD);
+
+bool CPointCMD::KeyValue(KeyValueData *pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "command")) // Comando
+	{
+		m_command = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "hu3target")) // Alvo. Obs: hu3target porque target ja esta em uso pelo jogo
+	{
+		m_target = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else
+		return CPointEntity::KeyValue(pkvd);
+}
+
+void CPointCMD::Spawn(void)
+{
+	// Precisa dos argumentos
+	if ((m_command == NULL) || (m_target == NULL))
+		ALERT(at_console, "Estao faltando argumentos num point_cmd... Ele nao funcionara!\n");
+
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+
+	if (pev->scale > 0)
+		pev->nextthink = gpGlobals->time + 1.0;
+}
+
+void CPointCMD::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+{
+	// Precisa dos argumentos
+	if ((m_command == NULL) || (m_target == NULL))
+	{
+		ALERT(at_console, "Estao faltando argumentos num trigger_cmd... Ignorando-o!\n");
+		return;
+	}
+
+	// Rodar comando uma unica vez no servidor
+	if (strcmp(STRING(m_target), "server") == 0)
+	{
+		SERVER_COMMAND(UTIL_VarArgs("%s\n", STRING(m_command)));
+	}
+	// Rodar comando em cada jogador
+	else if (strcmp(STRING(m_target), "clients") == 0)
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			edict_t *hu3Player = g_engfuncs.pfnPEntityOfEntIndex(i);
+			if (hu3Player)
+			{
+				CBaseEntity *pEnt = CBaseEntity::Instance(hu3Player);
+				if (pEnt && pEnt->IsPlayer())
+					CLIENT_COMMAND(hu3Player, "%s\n", STRING(m_command));
+			}
+		}
+	}
+	// Rodar comando em algum jogador qualquer
+	else if (strcmp(STRING(m_target), "randomclient") == 0)
+	{
+		edict_t *hu3Player = g_engfuncs.pfnPEntityOfEntIndex(UTIL_GetRandomPLayerID());
+		if (hu3Player)
+			CLIENT_COMMAND(hu3Player, "%s\n", STRING(m_command));
+	}
+
+	// Remover a entidade
+	UTIL_Remove(this);
+}
 // ############ //
