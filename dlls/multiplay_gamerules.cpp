@@ -164,6 +164,7 @@ void CHalfLifeMultiplay::RefreshSkillData()
 	// ############ hulifezado ############ //
 	// Novas armas
 	gSkillData.plrDmgDeagle = 2; // Dano base, o real usa qualidade da arma
+	gSkillData.plrDmgKnife = 1;
 	// ############ //
 }
 

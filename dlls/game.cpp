@@ -420,6 +420,7 @@ cvar_t sk_scientist_heal3 = {"sk_scientist_heal3", "0"};
 // Desert Eagle Round
 DECLARE_SKILL_CVARS(plr_eagle);
 DECLARE_SKILL_CVARS(plr_eagle_mp);
+DECLARE_SKILL_CVARS(plr_knife);
 // ############ //
 
 // monster damage adjusters
@@ -889,6 +890,7 @@ void GameDLLInit()
 	// Desert Eagle Round
 	REGISTER_SKILL_CVARS(plr_eagle);
 	REGISTER_SKILL_CVARS(plr_eagle_mp);
+	REGISTER_SKILL_CVARS(plr_knife);
 	// ############ //
 
 	// HEALTH/SUIT CHARGE DISTRIBUTION
