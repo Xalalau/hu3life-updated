@@ -815,4 +815,152 @@ void CPointCMD::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 	// Remover a entidade
 	UTIL_Remove(this);
 }
+
+/*
+	Hu3-Life Entity System
+
+	point_timer
+	Temporizador de disparo de entidades
+
+	by: NickMBR Mar/2018
+*/
+class CPointTimer : public CPointEntity
+{
+public:
+	using BaseClass = CPointEntity;
+
+#ifndef CLIENT_DLL
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
+	void Spawn(void);
+	bool KeyValue(KeyValueData *pkvd) override;
+
+	void TimerThink(void);
+	void TimerStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+	int m_iDuration;
+	int m_iRepeat;
+	float m_flendTime;
+
+	string_t m_targetOnTimerStart;
+	string_t m_targetOnTimerInterval;
+	string_t m_targetOnTimerEnd;
+
+	CBaseEntity* m_hTimerActivator;
+};
+
+#ifndef CLIENT_DLL
+TYPEDESCRIPTION CPointTimer::m_SaveData[] =
+{
+	DEFINE_FIELD(CPointTimer, m_iDuration, FIELD_INTEGER),
+	DEFINE_FIELD(CPointTimer, m_iRepeat, FIELD_INTEGER),
+	DEFINE_FIELD(CPointTimer, m_flendTime, FIELD_TIME),
+	DEFINE_FIELD(CPointTimer, m_targetOnTimerStart, FIELD_STRING),
+	DEFINE_FIELD(CPointTimer, m_targetOnTimerInterval, FIELD_STRING),
+	DEFINE_FIELD(CPointTimer, m_targetOnTimerEnd, FIELD_STRING),
+};
+
+IMPLEMENT_SAVERESTORE(CPointTimer, CPointTimer::BaseClass);
+#endif
+
+LINK_ENTITY_TO_CLASS(point_timer, CPointTimer);
+
+// Pega os valores das variaveis do FGD
+bool CPointTimer::KeyValue(KeyValueData *pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "tduration"))
+	{
+		m_iDuration = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "trepeat"))
+	{
+		m_iRepeat = atof(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "tonstart"))
+	{
+		m_targetOnTimerStart = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "toninterval"))
+	{
+		m_targetOnTimerInterval = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "tonend"))
+	{
+		m_targetOnTimerEnd = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else
+		return CPointEntity::KeyValue(pkvd);
+}
+
+// Seta as variaveis iniciais para 0 e realiza algumas checagens
+// Se tudo estiver OK, seta o metodo USE para TimerStart
+void CPointTimer::Spawn(void)
+{
+	m_flendTime = 0;
+
+	// Checagem de argumentos, não aceitar entidade se argumentos forem nulos ou vazios
+	if ((m_iDuration == NULL || m_iDuration <= 0) || (m_iRepeat == NULL || m_iRepeat <= 0))
+	{
+		ALERT(at_console, "point_timer detectado com argumentos faltantes, a entidade nao rodara!, Limite: %i, Repeticao: %i\n", m_iDuration, m_iRepeat);
+		SetThink(NULL);
+		SetUse(NULL); // Nao sera ativada por nada
+		return;
+	}
+
+	SetUse(&CPointTimer::TimerStart); // Seta o metodo de ativacao
+}
+
+void CPointTimer::TimerThink(void)
+{
+	// Verifica se o tempo ja ultrapassou o limite, reseta ou executa o target
+	if (gpGlobals->time > m_flendTime)
+	{
+		// Dispara o target OnTimerEnd
+		FireTargets(STRING(m_targetOnTimerEnd), m_hTimerActivator, this, USE_TOGGLE, 0);
+
+		SetThink(NULL);
+		SetUse(&CPointTimer::TimerStart); // Ativa novamente o uso dessa entidade
+		m_flendTime = 0; // Reseta o tempo limite
+	}
+	else
+	{
+		SetUse(NULL); // Desativa o uso da entidade ate que ela termine seu processo
+		pev->nextthink = gpGlobals->time + m_iRepeat;
+
+		// Dispara o target OnTimerInterval
+		FireTargets(STRING(m_targetOnTimerInterval), m_hTimerActivator, this, USE_TOGGLE, 0);
+	}
+}
+
+void CPointTimer::TimerStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+{
+	m_flendTime = gpGlobals->time + m_iDuration;
+	m_hTimerActivator = pActivator;
+
+	if (m_flendTime > 0)
+	{
+		// ALERT(at_console, "point_timer iniciou com: Limite: %i, Repeticao: %i, Inicio: %.2f, Final: %.2f\n", m_iDuration, m_iRepeat, m_flstartTime, m_flendTime);
+		// Dispara o target OnTimerStart
+		FireTargets(STRING(m_targetOnTimerStart), m_hTimerActivator, this, USE_TOGGLE, 0);
+
+		SetThink(&CPointTimer::TimerThink);
+		pev->nextthink = gpGlobals->time + m_iRepeat;
+	}
+	else
+	{
+		ALERT(at_console, "point_timer detectado com argumentos faltantes, a entidade nao rodara!, Limite: %i, Repeticao: %i\n", m_iDuration, m_iRepeat);
+		SetThink(NULL);
+		return;
+	}
+	
+}
 // ############ //
