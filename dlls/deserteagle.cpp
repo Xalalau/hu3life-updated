@@ -13,6 +13,26 @@
 *
 ****/
 
+
+
+
+
+/*
+
+
+ATENÇÃO!!!!!!
+
+A intenção dessa arma é dela ser bugada, quebrada, com defeitos, e que o jogador tenha que lidar com isso.
+
+!!!PORÉM!!! Ela ficou totalmente bugada, com erros que não sei nem resolver. Isso é uma feature agora.
+
+
+*/
+
+
+
+
+
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -650,7 +670,7 @@ void CDesertEagle::Reload()
 	{
 		// ############ hu3lifezado ############ //
 		// Tempo reajustado (1.5)
-		const bool bResult = DefaultReload(m_iClip ? DEAGLE_RELOAD : DEAGLE_RELOAD_NOSHOT, 3.7, 1);
+		const bool bResult = DefaultReload(GLOCK_MAX_CLIP, m_iClip ? DEAGLE_RELOAD : DEAGLE_RELOAD_NOSHOT, 3.7, 1);
 		// ############ //
 
 		if (bResult)
