@@ -1,3 +1,8 @@
+// ##############################
+// Tiro secundario da arma Touros, adaptado de:
+// http://web.archive.org/web/20020717063241/http://lambda.bubblemod.org/tuts/crowbar/
+// ##############################
+
 // ---------------------------------------------------------------
 // Based on Flying Crowbar Entity. Ver 1.0 as seen in Lambda BubbleMod
 // 
@@ -23,11 +28,6 @@
 //        4. This notice must not be removed or altered.              
 //                                                                    
 // ---------------------------------------------------------------
-
-// ############ hu3lifezado ############ //
-// Tiro secundario da arma Touros, adaptado de:
-// http://web.archive.org/web/20020717063241/http://lambda.bubblemod.org/tuts/crowbar/
-// ############ //
 
 #include "extdll.h"
 #include "util.h"
