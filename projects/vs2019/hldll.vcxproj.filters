@@ -51,6 +51,9 @@
     <ClCompile Include="..\..\dlls\aflock.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\airbope.cpp">
+      <Filter>Source Files\dlls</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dlls\agrunt.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
@@ -642,6 +645,9 @@
       <Filter>Header Files\game_shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\public\interface.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\osprey.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
   </ItemGroup>
