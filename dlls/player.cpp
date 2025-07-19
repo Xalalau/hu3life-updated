@@ -5154,3 +5154,47 @@ void CInfoIntermission::Think()
 }
 
 LINK_ENTITY_TO_CLASS(info_intermission, CInfoIntermission);
+
+
+// ############ hu3lifezado ############ //
+// Informa se o jogador possui alguma municao no geral
+bool CBasePlayer::HasAnyAmmo()
+{
+	CBasePlayerWeapon *pWeapon;
+	int i, j = 0;
+
+	// Vamos ver todas as armas possiveis desse player...
+	for (i = 0; i < MAX_WEAPON_SLOTS; i++)
+	{
+		// Se existir alguma primeira arma nessa particao de slots, vamos checar se ha municao nela...
+		pWeapon = (CBasePlayerWeapon*) m_rgpPlayerItems[i];
+
+		while (pWeapon)
+		{
+			// Quantidade da municao 1 em uso
+			j = pWeapon->m_iClip;
+
+			// Quantidade da municao 1 guardada
+			if (pWeapon->pszAmmo1())
+				j = j + m_rgAmmo[GetAmmoIndex(pWeapon->pszAmmo1())];
+
+			// Quantidade da municao 2 guardada
+			if (pWeapon->pszAmmo2())
+				j = j + m_rgAmmo[GetAmmoIndex(pWeapon->pszAmmo2())];
+
+			// Print maroto de testes
+			//ALERT(at_console, "################# Muni_ativa: %d / Muni_A: %d / Muni_B: %d\n", pWeapon->m_iClip, (*pPlayer).m_rgAmmo[pPlayer->GetAmmoIndex(pWeapon->pszAmmo1())], (*pPlayer).m_rgAmmo[pPlayer->GetAmmoIndex(pWeapon->pszAmmo2())]);
+
+			// Se houver alguma municao disponivel, retornamos TRUE
+			if (j > 0)
+				return true;
+
+			// Se nao houver municao aqui, verificamos a proxima arma disponivel...
+			pWeapon = (CBasePlayerWeapon*) pWeapon->m_pNext;
+		}
+	}
+
+	// Nenhuma municao foi encontrada nesse jogador, portanto retornamos FALSE
+	return false;
+}
+// ############ //

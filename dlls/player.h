@@ -93,6 +93,8 @@ public:
 	bool hu3_cam_reloading_weapon;
 	// Ativacao do sprite de mira em terceira pessoa
 	int hu3_cam_crosshair;
+	// Informa se o jogador possui alguma municao no geral
+	bool HasAnyAmmo();
 	// ############
 
 	// Spectator camera
