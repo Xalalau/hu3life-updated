@@ -59,6 +59,10 @@ void CPipewrench::Precache()
 	// uncomment all the appropriate lines.
 	/*PRECACHE_SOUND("weapons/pwrench_big_hit1.wav");
 	PRECACHE_SOUND("weapons/pwrench_big_hit2.wav");*/
+	// ############ hu3lifezado ############ //
+	// Varre varre vassourinha!!
+	PRECACHE_SOUND("weapons/pwrench_vassourinha.wav");
+	// ############ //
 	PRECACHE_SOUND("weapons/pwrench_big_hitbod1.wav");
 	PRECACHE_SOUND("weapons/pwrench_big_hitbod2.wav");
 	PRECACHE_SOUND("weapons/pwrench_big_miss.wav");
@@ -131,7 +135,10 @@ bool CPipewrench::Swing(const bool bFirst)
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 	Vector vecSrc = m_pPlayer->GetGunPosition();
-	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
+	// ############ hu3lifezado ############ //
+	// Aumentei o alcance (32)
+	Vector vecEnd = vecSrc + gpGlobals->v_forward * 64;
+	// ############ //
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
 
@@ -228,9 +235,11 @@ bool CPipewrench::Swing(const bool bFirst)
 		}
 
 #endif
-
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
-		m_flNextSecondaryAttack = GetNextAttackDelay(0.5);
+		// ############ hu3lifezado ############ //
+		// Ataques mais rapidos (0.5)
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.3);
+		m_flNextSecondaryAttack = GetNextAttackDelay(0.3);
+		// ############ //
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 
 #ifndef CLIENT_DLL
@@ -311,7 +320,10 @@ void CPipewrench::BigSwing()
 
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 	Vector vecSrc = m_pPlayer->GetGunPosition();
-	Vector vecEnd = vecSrc + gpGlobals->v_forward * 32;
+	// ############ hu3lifezado ############ //
+	// Aumentei o alcance (32)
+	Vector vecEnd = vecSrc + gpGlobals->v_forward * 128;
+	// ############ //
 
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr);
 
@@ -379,6 +391,12 @@ void CPipewrench::BigSwing()
 			ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 		}
 
+		// ############ hu3lifezado ############ //
+		// 15% de chance de reproduzir "Varre varre vassourinha!!"
+		if (RANDOM_LONG(0, 99) >= 85)
+			EMIT_SOUND(m_pPlayer->edict(), CHAN_STREAM, "weapons/pwrench_vassourinha.wav", 1, ATTN_NORM);
+		// ############ //
+
 		// play thwack, smack, or dong sound
 		float flVol = 1.0;
 		bool bHitWorld = true;
@@ -387,6 +405,11 @@ void CPipewrench::BigSwing()
 		{
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 			{
+				// ############ hu3lifezado ############ //
+				// Inimigo eh sinistramente arremessado
+				pEntity->pev->velocity = pEntity->pev->velocity + gpGlobals->v_forward * 1500 + gpGlobals->v_up * 1050;
+				// ############ //
+
 				// play thwack or smack sound
 				switch (RANDOM_LONG(0, 1))
 				{
@@ -451,8 +474,11 @@ void CPipewrench::BigSwing()
 		/*SetThink( &CPipewrench::Smack );
 		SetNextThink( UTIL_WeaponTimeBase() + 0.2 );*/
 #endif
-		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-		m_flNextSecondaryAttack = GetNextAttackDelay(1.0);
+		// ############ hu3lifezado ############ //
+		// Ataques mais rapidos (1.0)
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+		m_flNextSecondaryAttack = GetNextAttackDelay(0.5);
+		// ############ //
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 	}
 }
