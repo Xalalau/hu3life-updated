@@ -371,6 +371,11 @@ extern float UTIL_DotPoints(const Vector& vecSrc, const Vector& vecCheck, const 
 
 extern void UTIL_StripToken(const char* pKey, char* pDest, int nLen); // for redundant keynames
 
+// ############ hu3lifezado ############ //
+// Manuseio seguro de jogadores
+int UTIL_GetRandomPLayerID();
+// ############ //
+
 // Misc functions
 extern void SetMovedir(entvars_t* pev);
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
