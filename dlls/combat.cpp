@@ -311,7 +311,7 @@ void CBaseMonster::GibMonster()
 			CGib::SpawnHeadGib(pev);
 
 			// ############ hu3lifezado ############ //
-			// Mais tripas com gore e menos no modo coop
+			// Mais tripas com gore
 			if (CVAR_GET_FLOAT("hu3_gore"))
 				CGib::SpawnRandomGibs(pev, 5, true);
 			else
@@ -326,7 +326,7 @@ void CBaseMonster::GibMonster()
 		{
 
 			// ############ hu3lifezado ############ //
-			// Mais tripas com gore e menos no modo coop
+			// Mais tripas com gore
 			if (CVAR_GET_FLOAT("hu3_gore"))
 				CGib::SpawnRandomGibs(pev, 5, true);
 			else
