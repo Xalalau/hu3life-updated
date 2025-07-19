@@ -36,6 +36,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/bloater.o \
 	$(HLDLL_OBJ_DIR)/bmodels.o \
 	$(HLDLL_OBJ_DIR)/bullsquid.o \
+	$(HLDLL_OBJ_DIR)/butano.o \
 	$(HLDLL_OBJ_DIR)/buttons.o \
 	$(HLDLL_OBJ_DIR)/cbase.o \
 	$(HLDLL_OBJ_DIR)/client.o \

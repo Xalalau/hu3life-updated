@@ -23,3 +23,19 @@
 #define SF_ENVEXPLOSION_NOSPARKS (1 << 5)	// don't make a scorch mark
 
 extern void ExplosionCreate(const Vector& center, const Vector& angles, edict_t* pOwner, int magnitude, bool doDamage);
+
+class CEnvExplosion : public CBaseMonster
+{
+public:
+	void Spawn() override;
+	void EXPORT Smoke();
+	bool KeyValue(KeyValueData* pkvd) override;
+	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) override;
+
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+	static TYPEDESCRIPTION m_SaveData[];
+
+	int m_iMagnitude;  // how large is the fireball? how much damage?
+	int m_spriteScale; // what's the exact fireball sprite scale?
+};
