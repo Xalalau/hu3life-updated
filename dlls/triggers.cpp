@@ -2449,3 +2449,128 @@ void CTriggerCamera::Move()
 	float fraction = 2 * gpGlobals->frametime;
 	pev->velocity = ((pev->movedir * pev->speed) * fraction) + (pev->velocity * (1 - fraction));
 }
+
+// ############ hu3lifezado ############ //
+/*
+HU3-LIFE trigger_cmd
+
+Entidade que executa comandos de console nos seguintes alvos:
+
+1) "clients" = em cada jogador;
+2) "server" = no servidor;
+3) "activator" = no jogador que ativou o trigger;
+4) "random client" = em um jogador qualquer.
+
+Ela eh ativada apenas pelo contato de jogadores.
+Ela So funciona uma unica vez.
+*/
+
+class CTriggerCMD : public CBaseTrigger
+{
+public:
+	using BaseClass = CBaseTrigger;
+
+#ifndef CLIENT_DLL
+	bool Save(CSave& save) override;
+	bool Restore(CRestore& restore) override;
+
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
+
+	void Spawn();
+
+	bool KeyValue(KeyValueData *pkvd);
+
+	void Touch (CBaseEntity *pOther);
+
+	string_t m_command;		// Comando
+	string_t m_target;      // Alvo(s)
+};
+
+
+#ifndef CLIENT_DLL
+TYPEDESCRIPTION CTriggerCMD::m_SaveData[] =
+{
+	DEFINE_FIELD(CTriggerCMD, m_command, FIELD_STRING),
+	DEFINE_FIELD(CTriggerCMD, m_target, FIELD_STRING),
+};
+
+IMPLEMENT_SAVERESTORE(CTriggerCMD, CTriggerCMD::BaseClass);
+#endif
+
+LINK_ENTITY_TO_CLASS(trigger_cmd, CTriggerCMD);
+
+bool CTriggerCMD::KeyValue(KeyValueData *pkvd)
+{
+	if (FStrEq(pkvd->szKeyName, "command")) // Comando
+	{
+		m_command = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else if (FStrEq(pkvd->szKeyName, "hu3target")) // Alvo. Obs: hu3target porque target ja esta em uso pelo jogo
+	{
+		m_target = ALLOC_STRING(pkvd->szValue);
+		return true;
+	}
+	else
+		return CBaseTrigger::KeyValue(pkvd);
+}
+
+void CTriggerCMD::Spawn()
+{
+	// Precisa dos argumentos
+	if ((m_command == NULL) || (m_target == NULL))
+		ALERT(at_console, "Estao faltando argumentos num trigger_cmd... Ele nao funcionara!\n");
+
+	InitTrigger();
+}
+
+void CTriggerCMD::Touch(CBaseEntity *pOther)
+{
+	// Ativamento apenas por jogadores
+	if (!pOther->IsPlayer())
+		return;
+
+	// Precisa dos argumentos
+	if ((m_command == NULL) || (m_target == NULL))
+	{
+		ALERT(at_console, "Estao faltando argumentos num trigger_cmd... Ignorando-o!\n");
+		return;
+	}
+
+	// Rodar comando uma unica vez no servidor
+	if (strcmp(STRING(m_target), "server") == 0)
+	{
+		SERVER_COMMAND(UTIL_VarArgs("%s\n", STRING(m_command)));
+	}
+	// Rodar comando em cada jogador
+	else if (strcmp(STRING(m_target), "clients") == 0)
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			edict_t *hu3Player = g_engfuncs.pfnPEntityOfEntIndex(i);
+			if (hu3Player)
+			{
+				CBaseEntity *pEnt = CBaseEntity::Instance(hu3Player);
+				if (pEnt && pEnt->IsPlayer())
+					CLIENT_COMMAND(hu3Player, "%s\n", STRING(m_command));
+			}
+		}
+	}
+	// Rodar comando no jogador que ativou o trigger
+	else if (strcmp(STRING(m_target), "activator") == 0)
+	{
+		CLIENT_COMMAND(g_engfuncs.pfnPEntityOfEntIndex(pOther->entindex()), "%s\n", STRING(m_command));
+	}
+	// Rodar comando em algum jogador qualquer
+	else if (strcmp(STRING(m_target), "randomclient") == 0)
+	{
+		edict_t *hu3Player = g_engfuncs.pfnPEntityOfEntIndex(UTIL_GetRandomPLayerID());
+		if (hu3Player)
+			CLIENT_COMMAND(hu3Player, "%s\n", STRING(m_command));
+	}
+
+	// Remover a entidade
+	UTIL_Remove(this);
+}
+// ############ //
