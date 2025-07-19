@@ -2696,6 +2696,12 @@
 	]
 ]
 
+// ############ hulifezado ############ //
+// Novas armas
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_desert_eagle.mdl") = weapon_eagle : "Desert Eagle" []
+@PointClass base(Weapon, Targetx, RenderFields) studio("models/w_knife.mdl") = weapon_knife : "Knife" []
+// ############
+
 //
 // Xen
 //
