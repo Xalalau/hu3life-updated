@@ -92,7 +92,10 @@ void CSquidSpit::Spawn()
 
 	SET_MODEL(ENT(pev), "sprites/bigspit.spr");
 	pev->frame = 0;
-	pev->scale = 0.5;
+	// ############ hu3lifezado ############ //
+	// Escala do vomito esta bem maior agora! (0.5)
+	pev->scale = 2.5;
+	// ############ //
 
 	UTIL_SetSize(pev, Vector(0, 0, 0), Vector(0, 0, 0));
 
@@ -118,7 +121,10 @@ void CSquidSpit::Shoot(entvars_t* pevOwner, Vector vecStart, Vector vecVelocity)
 	pSpit->Spawn();
 
 	UTIL_SetOrigin(pSpit->pev, vecStart);
-	pSpit->pev->velocity = vecVelocity;
+	// ############ hu3lifezado ############ //
+	// Multipliquei a velocidade do projetil por 3. (1)
+	pSpit->pev->velocity = vecVelocity * 3;
+	// ############ //
 	pSpit->pev->owner = ENT(pevOwner);
 
 	pSpit->SetThink(&CSquidSpit::Animate);
@@ -162,7 +168,10 @@ void CSquidSpit::Touch(CBaseEntity* pOther)
 		WRITE_COORD(tr.vecPlaneNormal.y);
 		WRITE_COORD(tr.vecPlaneNormal.z);
 		WRITE_SHORT(iSquidSpitSprite); // model
-		WRITE_BYTE(5);				   // count
+		// ############ hu3lifezado ############ //
+		// Aumentei a quantidade de meleca durante o impacto com paredes. (5)
+		WRITE_BYTE (30);			// count
+		// ############ //
 		WRITE_BYTE(30);				   // speed
 		WRITE_BYTE(80);				   // noise ( client will divide by 100 )
 		MESSAGE_END();
