@@ -205,8 +205,13 @@ void CSqueakGrenade::HuntThink()
 	if (gpGlobals->time >= m_flDie)
 	{
 		g_vecAttackDir = pev->velocity.Normalize();
-		pev->health = -1;
-		Killed(pev, 0);
+
+		// ############ hu3lifezado ############ //
+		// Barriguinha mole nao morre mais por tempo
+		//pev->health = -1;
+		//Killed(pev, 0);
+		m_flDie = gpGlobals->time + SQUEEK_DETONATE_DELAY;
+		// ############ //
 		return;
 	}
 
