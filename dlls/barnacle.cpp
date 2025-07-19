@@ -112,7 +112,10 @@ void CBarnacle::Spawn()
 	pev->takedamage = DAMAGE_AIM;
 	m_bloodColor = BLOOD_COLOR_RED;
 	pev->effects = EF_INVLIGHT; // take light from the ceiling
-	pev->health = 25;
+	// ############ hu3lifezado ############ //
+	// Abaixei o sangue para ela não encher tanto o saco. (25)
+	pev->health = 1;
+	// ############ //
 	m_flFieldOfView = 0.5; // indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState = MONSTERSTATE_NONE;
 	m_flKillVictimTime = 0;
@@ -277,6 +280,13 @@ void CBarnacle::BarnacleThink()
 		}
 
 		pTouchEnt = TongueTouchEnt(&flLength);
+
+		// ############ hu3lifezado ############ //
+		// Se o jogador estiver com godmod, nao pegar ele! Fica muito bugado
+		if (pTouchEnt != NULL)
+			if (pTouchEnt->pev->flags & FL_GODMODE)
+				return;
+		// ############ //
 
 		if (pTouchEnt != NULL && m_fTongueExtended)
 		{
