@@ -323,7 +323,11 @@ class CMP5AmmoClip : public CBasePlayerAmmo
 		bool bResult = (pOther->GiveAmmo(AMMO_MP5CLIP_GIVE, "9mm", _9MM_MAX_CARRY) != -1);
 		if (bResult)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
 		}
 		return bResult;
 	}
@@ -351,7 +355,11 @@ class CMP5Chainammo : public CBasePlayerAmmo
 		bool bResult = (pOther->GiveAmmo(AMMO_CHAINBOX_GIVE, "9mm", _9MM_MAX_CARRY) != -1);
 		if (bResult)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
 		}
 		return bResult;
 	}
@@ -378,7 +386,11 @@ class CMP5AmmoGrenade : public CBasePlayerAmmo
 
 		if (bResult)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
 		}
 		return bResult;
 	}

@@ -147,6 +147,11 @@ public:
 class CBaseEntity
 {
 public:
+	// ############ hu3lifezado ############ //
+	// Permite omitir o som de captura de itens
+	bool enable_item_pickup_sound;
+	// ############
+
 	// Constructor.  Set engine to use C/C++ callback functions
 	// pointers to engine data
 	entvars_t* pev; // Don't need to save/restore this pointer, the engine resets it

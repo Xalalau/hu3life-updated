@@ -25,6 +25,37 @@ class CBasePlayer;
 class CItem;
 class CBasePlayerAmmo;
 
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+// Valores do Hu3-Life
+namespace Coop
+{
+/**
+*	Co-op setting options.
+*/
+enum Coop
+{
+	/**
+	*	Sem coop.
+	*/
+	NO = 0,
+
+	/**
+	*	Com coop.
+	*/
+	YES = 1
+};
+}
+
+namespace GameRules
+{
+/**
+*	Determines which co-op mode is in use.
+*/
+Coop::Coop DetermineCoopMode();
+}
+// ############ //
+
 // weapon respawning return codes
 enum
 {
@@ -57,6 +88,17 @@ enum
 	GR_ALLY,
 	GR_NEUTRAL,
 };
+
+// ############ hu3lifezado ############ //
+// Movi essa constante das regras do HL para cá
+// when we are within this close to running out of entities,  items
+// marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
+#define ENTITY_INTOLERANCE 100
+
+// Essas duas já estavam porcamente definidas no multiplay_gamerules.cpp, só expandi elas para cá
+#define MAX_MOTD_CHUNK 60
+#define MAX_MOTD_LENGTH 1536 // (MAX_MOTD_CHUNK * 4)
+// ############ //
 
 class CGameRules
 {
@@ -163,6 +205,16 @@ public:
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame() {}
 
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Declaracao do uso vazio e generalizado do changelevel do modo coop
+	// Preciso disso para acessar essa funcao externamente em qualquer arquivo do HL1
+	virtual void ChangeLevelCoopToogle();
+	// [MODO COOP]
+	// Desativar a fisica dos jogadores em qualquer lugar
+	virtual void DisablePhysics(CBaseEntity * pEntity);
+	// ############ //
+
 protected:
 	CBasePlayerItem* FindNextBestWeapon(CBasePlayer* pPlayer, CBasePlayerItem* pCurrentWeapon);
 };
@@ -254,6 +306,12 @@ public:
 	// Teamplay stuff
 	const char* GetTeamID(CBaseEntity* pEntity) override { return ""; }
 	int PlayerRelationship(CBaseEntity* pPlayer, CBaseEntity* pTarget) override;
+
+private:
+	// ############ hu3lifezado ############ //
+	// Delay para executar checagem de comandos preconfigurados
+	float checkCommandsDelay;
+	// ############ //
 };
 
 //=========================================================

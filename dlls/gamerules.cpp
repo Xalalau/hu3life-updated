@@ -23,6 +23,11 @@
 #include "weapons.h"
 #include "gamerules.h"
 #include "teamplay_gamerules.h"
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+#include "hu3coop.h"
+#include "hlcoop_gamerules.h"
+// ############ //
 #include "skill.h"
 #include "game.h"
 #include "UserMessages.h"
@@ -380,10 +385,61 @@ void CGameRules::RefreshSkillData()
 // instantiate the proper game rules object
 //=========================================================
 
-CGameRules* InstallGameRules()
+// ############ hulifezado ############ //
+// Controles de coop portados do HLEnhanced
+namespace GameRules
 {
-	SERVER_COMMAND("exec game.cfg\n");
-	SERVER_EXECUTE();
+Coop::Coop DetermineCoopMode()
+{
+	const int iCoop = static_cast<int>(coop.value);
+
+	if(iCoop == 0)
+		return Coop::NO;
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Valores do Hu3-Life
+	return Coop::YES;
+	// ############ //
+}
+}
+
+static CGameRules* CreateGameRules()
+{
+	g_teamplay = 0;
+
+	//Determine whether co-op mode is enabled, and which rules should be used.
+	const Coop::Coop coopMode = GameRules::DetermineCoopMode();
+
+	if(coopMode != Coop::NO)
+	{
+		//We're in co-op mode, so tweak the global vars to match a co-op environment.
+		//Needed since some code relies on them. - Solokiller
+		gpGlobals->coop = true;
+		gpGlobals->deathmatch = false;
+		gpGlobals->teamplay = false;
+
+		CVAR_SET_FLOAT("coop", 1);
+		CVAR_SET_FLOAT("deathmatch", 0);
+
+		switch(coopMode)
+		{
+			//Case to catch any missing cases if more modes are added. - Solokiller
+			case Coop::NO:
+				break;
+			// ############ hu3lifezado ############ //
+			// [MODO COOP]
+			// Valores do Hu3-Life
+			case Coop::YES:
+				return new CBaseHalfLifeCoop;
+			// ############ //
+		}
+	}
+
+	//Make sure this is reset if cvars are changed. - Solokiller
+	gpGlobals->coop = false;
+
+	CVAR_SET_FLOAT("coop", 0);
 
 	if (1 == sv_busters.value)
 	{
@@ -419,3 +475,31 @@ CGameRules* InstallGameRules()
 		}
 	}
 }
+
+CGameRules* InstallGameRules()
+{
+	SERVER_COMMAND("exec game.cfg\n");
+	SERVER_EXECUTE();
+
+	g_pGameRules = CreateGameRules();
+
+	return g_pGameRules;
+}
+// ############ //
+
+
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+// Uso vazio e generalizado do changelevel do modo coop
+// Preciso disso para acessar essa funcao externamente em qualquer arquivo do HL1
+void CGameRules::ChangeLevelCoopToogle()
+{
+	return;
+}
+// [MODO COOP]
+// Desativar a fisica dos jogadores em qualquer lugar
+void CGameRules::DisablePhysics(CBaseEntity * pEntity)
+{
+	return;
+}
+// ############ //

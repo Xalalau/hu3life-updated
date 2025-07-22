@@ -33,6 +33,14 @@
 #include "weapons.h"
 #include "gamerules.h"
 #include "teamplay_gamerules.h"
+// ############ hu3lifezado ############ //
+// Função para carregar e executar comandos de mapa, um oferecimento do Chat GGG
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+// ############ //
 
 CGlobalState gGlobalState;
 
@@ -287,6 +295,13 @@ void CGlobalState::Reset()
 
 globalentity_t* CGlobalState::Find(string_t globalname)
 {
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// No modo coop nos nao carregamos nenhuma entidade de um mapa para o outro desse jeito
+	if ((g_pGameRules) && (g_pGameRules->IsCoOp()))
+		return NULL;
+	// ############ //
+
 	if (FStringNull(globalname))
 		return NULL;
 
@@ -510,9 +525,75 @@ CWorld::~CWorld()
 	World = nullptr;
 }
 
+// ############ hu3lifezado ############ //
+// Função para carregar e executar comandos de mapa, um oferecimento do Chat GGG
+void RunCommand(const std::string& key, const std::string& value)
+{
+    std::string fullCommand = key + " " + value + "\n";
+    SERVER_COMMAND(fullCommand.c_str());  // Run command in server console
+}
+
+// Helper to trim quotes and spaces
+std::string TrimQuotes(const std::string& str)
+{
+    size_t start = str.find_first_not_of(" \t\"");
+    size_t end = str.find_last_not_of(" \t\"");
+    if (start == std::string::npos || end == std::string::npos)
+        return "";
+    return str.substr(start, end - start + 1);
+}
+
+void LoadAndRunMapCommands()
+{
+	char szConfigName[PATH_MAX];
+
+	char szGameDir[PATH_MAX];
+	char szBuffer[PATH_MAX];
+	GET_GAME_DIR(szBuffer);
+	strncpy(szGameDir, szBuffer, sizeof(szGameDir));
+	szGameDir[sizeof(szGameDir) - 1] = '\0';
+
+	sprintf(szConfigName, "%s/maps/%s.txt", szGameDir, STRING(gpGlobals->mapname));
+
+	std::string path =  std::string(szConfigName);
+    std::ifstream file(path.c_str());
+
+    if (!file.is_open())
+    {
+        ALERT(at_console, "Could not open command file: %s\n", path.c_str());
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        // Skip empty lines and comments
+        if (line.empty() || line[0] == '/' || line[0] == '#')
+            continue;
+
+        std::istringstream iss(line);
+        std::string keyQuoted, valueQuoted;
+        if (!(iss >> keyQuoted >> valueQuoted))
+            continue;
+
+        std::string key = TrimQuotes(keyQuoted);
+        std::string value = TrimQuotes(valueQuoted);
+
+        if (!key.empty() && !value.empty())
+        {
+            RunCommand(key, value);
+        }
+    }
+
+    file.close();
+}
+// ############ //
+
+
 void CWorld::Spawn()
 {
 	g_fGameOver = false;
+	LoadAndRunMapCommands();
 	Precache();
 }
 
@@ -541,6 +622,13 @@ void CWorld::Precache()
 	delete g_pGameRules;
 
 	g_pGameRules = InstallGameRules();
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Changelevel do coop leva esse sprite
+	if (g_pGameRules->IsCoOp())
+		PRECACHE_MODEL("sprites/changelevel.spr");
+	// ############ //
 
 	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here
 

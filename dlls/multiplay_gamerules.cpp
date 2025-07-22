@@ -160,12 +160,6 @@ void CHalfLifeMultiplay::RefreshSkillData()
 
 	// hornet
 	gSkillData.plrDmgHornet = 10;
-
-	// ############ hulifezado ############ //
-	// Novas armas
-	gSkillData.plrDmgDeagle = 2; // Dano base, o real usa qualidade da arma
-	gSkillData.plrDmgKnife = 1;
-	// ############ //
 }
 
 //=========================================================
@@ -842,10 +836,6 @@ float CHalfLifeMultiplay::FlWeaponRespawnTime(CBasePlayerItem* pWeapon)
 
 	return gpGlobals->time + WEAPON_RESPAWN_TIME;
 }
-
-// when we are within this close to running out of entities,  items
-// marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
-#define ENTITY_INTOLERANCE 100
 
 //=========================================================
 // FlWeaponRespawnTime - Returns 0 if the weapon can respawn
@@ -1617,9 +1607,6 @@ void CHalfLifeMultiplay::ChangeLevel()
 		SERVER_COMMAND(szCommands);
 	}
 }
-
-#define MAX_MOTD_CHUNK 60
-#define MAX_MOTD_LENGTH 1536 // (MAX_MOTD_CHUNK * 4)
 
 void CHalfLifeMultiplay::SendMOTDToClient(edict_t* client)
 {

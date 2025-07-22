@@ -23,6 +23,10 @@
 #include "schedule.h"
 #include "soundent.h"
 #include "decals.h"
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+#include "gamerules.h"
+// ############ //
 
 #define ROACH_IDLE 0
 #define ROACH_BORED 1

@@ -286,7 +286,12 @@ class CGlockAmmo : public CBasePlayerAmmo
 	{
 		if (pOther->GiveAmmo(AMMO_GLOCKCLIP_GIVE, "9mm", _9MM_MAX_CARRY) != -1)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
+
 			return true;
 		}
 		return false;

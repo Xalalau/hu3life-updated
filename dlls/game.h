@@ -53,6 +53,8 @@ inline cvar_t* g_footsteps;
 inline cvar_t* g_psv_cheats;
 
 // ############ hu3lifezado ############ //
+// Coop
+extern cvar_t	coop;
 // Portado do HLEnhanced
 #define DECLARE_SKILL_CVARS( name )					\
 cvar_t	sk_##name##1 = { "sk_" #name "1", "0" };	\

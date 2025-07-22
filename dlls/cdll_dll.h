@@ -67,8 +67,12 @@ enum WeaponId
 	// ############ //
 
 	WEAPON_SUIT = 31
-};
 
+	// ############ hulifezado ############ //
+	// [COOP]
+	// Ao adicionar armas, atualize o gato WeaponIdToName nas regras do coop.
+	// ############ //
+};
 
 // used by suit voice to indicate damage sustained and repaired type to player
 

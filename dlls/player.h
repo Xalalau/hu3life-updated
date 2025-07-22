@@ -301,8 +301,12 @@ public:
 	void SelectItem(const char* pstr);
 	void ItemPreFrame();
 	void ItemPostFrame();
-	void GiveNamedItem(const char* szName);
-	void GiveNamedItem(const char* szName, int defaultAmmo);
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Retorno a entidade para poder lidar com ela
+	CBaseEntity* GiveNamedItem(const char* szName);
+	CBaseEntity* GiveNamedItem(const char* szName, int defaultAmmo);
+	// ############ //
 	void EnableControl(bool fControl);
 
 	int GiveAmmo(int iAmount, const char* szName, int iMax) override;

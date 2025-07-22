@@ -106,6 +106,12 @@ public:
 
 	void OverrideReset() override;
 
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Um pequeno pulo extra
+	void PreNextHu3(void);
+	// ############ //
+
 	CPathTrack* m_ppath;
 	float m_length;
 	float m_height;

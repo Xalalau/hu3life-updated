@@ -25,6 +25,11 @@
 #include "cbase.h"
 #include "trains.h"
 #include "saverestore.h"
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+#include "hu3coop.h"
+#include "gamerules.h"
+// ############ //
 
 static void PlatSpawnInsideTrigger(entvars_t* pevPlatform);
 
@@ -1170,6 +1175,25 @@ void CFuncTrackTrain::UpdateSound()
 
 void CFuncTrackTrain::Next()
 {
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Adicionada possibilidade de delay para evitar que o trem se mova antes do jogador entrar no server
+	if (g_pGameRules->IsCoOp() &&
+		strcmp(CVAR_GET_STRING("coop_train_delay"), "0") != 0 &&
+		strcmp(STRING(pev->targetname), "") != 0 &&
+		strcmp(CVAR_GET_STRING("coop_train_spawnpoint"), STRING(pev->targetname)) == 0)
+	{
+		// Esse "Next()" ainda eh chamado se sabe-se la onde, entao eu passo por cima
+		// dele e volto para o meu delay personalizado
+
+		NextThink(pev->ltime + 0.1, false);
+		SetThink(&CFuncTrackTrain::PreNextHu3);
+
+		return;
+	}
+	// ############ //
+
 	float time = 0.5;
 
 	if (0 == pev->speed)
@@ -1409,13 +1433,78 @@ void CFuncTrackTrain::Find()
 	if ((pev->spawnflags & SF_TRACKTRAIN_NOPITCH) != 0)
 		pev->angles.x = 0;
 	UTIL_SetOrigin(pev, nextPos);
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Adicionada possibilidade de delay para evitar que o trem se mova antes do jogador entrar no server
+	if (g_pGameRules->IsCoOp())
+	{
+		PreNextHu3();
+		return;
+	}
+	else
+	{
+		NextThink(pev->ltime + 0.1, false);
+		SetThink(&CFuncTrackTrain::Next);
+		pev->speed = m_startSpeed;
+
+		UpdateSound();
+	}
+	// ############ //
+}
+
+
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+// Adicionada possibilidade de delay para evitar que o trem se mova antes do jogador entrar no server
+void CFuncTrackTrain::PreNextHu3()
+{
+	// Se for necessario atrasar o trem...
+	if (strcmp(CVAR_GET_STRING("coop_train_delay"), "0") != 0 &&
+		strcmp(STRING(pev->targetname), "") != 0 &&
+		strcmp(CVAR_GET_STRING("coop_train_spawnpoint"), STRING(pev->targetname)) == 0)
+	{
+		// Parar qualquer trem chamado via OverrideReset()
+		if (pev->speed != 0)
+			pev->speed = 0;
+
+		// Aplico a reducao de velocidade a cada 0.1s ate acabar o delay porque por alguma razao se eu
+		// quiser esperar o tempo todo o trem fdp simplesmente comeca a andar sozinho
+		float current_delay;
+		sscanf(CVAR_GET_STRING("coop_train_delay"), "%f", &current_delay);
+
+		NextThink(pev->ltime + 0.1, false);
+		SetThink(&CFuncTrackTrain::PreNextHu3);
+
+		if (current_delay - 0.1 < 0)
+			CVAR_SET_FLOAT("coop_train_delay", 0); /* A conversao de string para float eh cagada e quase sempre eu termino com numeros negativos */
+		else
+			CVAR_SET_FLOAT("coop_train_delay", current_delay - 0.1);
+
+		return;
+	}
+
+	// Aplicando funcionamento normal:
+
 	NextThink(pev->ltime + 0.1, false);
 	SetThink(&CFuncTrackTrain::Next);
-	pev->speed = m_startSpeed;
+
+	// Obs: forcar a velocidade (resolve bugs as vezes)
+	if (strcmp(CVAR_GET_STRING("coop_train_startspeed"), "0") != 0)
+	{
+		float force_startspeed;
+
+		sscanf(CVAR_GET_STRING("coop_train_startspeed"), "%f", &force_startspeed);
+		pev->speed = force_startspeed;
+
+		CVAR_SET_STRING("coop_train_startspeed", "0");
+	}
+	else
+		pev->speed = m_startSpeed;
 
 	UpdateSound();
 }
-
+// ############ //
 
 void CFuncTrackTrain::NearestPath()
 {

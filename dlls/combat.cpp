@@ -29,6 +29,10 @@
 #include "animation.h"
 #include "weapons.h"
 #include "func_break.h"
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+#include "gamerules.h"
+// ############ //
 
 extern Vector VecBModelOrigin(entvars_t* pevBModel);
 
@@ -311,11 +315,16 @@ void CBaseMonster::GibMonster()
 			CGib::SpawnHeadGib(pev);
 
 			// ############ hu3lifezado ############ //
-			// Mais tripas com gore
-			if (CVAR_GET_FLOAT("hu3_gore"))
-				CGib::SpawnRandomGibs(pev, 5, true);
+			// [MODO COOP]
+			// Mais tripas com hu3 gore, mas menos tripas no coop
+			if (!g_pGameRules->IsCoOp())
+				if (CVAR_GET_FLOAT("hu3_gore"))
+					CGib::SpawnRandomGibs(pev, 5, true);
+				else
+					CGib::SpawnRandomGibs(pev, 2, true); // throw some human gibs.
 			else
-				CGib::SpawnRandomGibs(pev, 2, true); // throw some human gibs.
+				CGib::SpawnRandomGibs(pev, 1, true);
+
 			// ############ //
 		}
 		gibbed = true;
@@ -324,13 +333,17 @@ void CBaseMonster::GibMonster()
 	{
 		if (CVAR_GET_FLOAT("violence_agibs") != 0) // Should never get here, but someone might call it directly
 		{
-
 			// ############ hu3lifezado ############ //
-			// Mais tripas com gore
-			if (CVAR_GET_FLOAT("hu3_gore"))
-				CGib::SpawnRandomGibs(pev, 5, true);
+			// [MODO COOP]
+			// Mais tripas com hu3 gore, mas menos tripas no coop
+			if (!g_pGameRules->IsCoOp())
+				if (CVAR_GET_FLOAT("hu3_gore"))
+					CGib::SpawnRandomGibs(pev, 5, true);
+				else
+					CGib::SpawnRandomGibs(pev, 2, true); // throw some human gibs.
 			else
-				CGib::SpawnRandomGibs(pev, 2, true);	// throw alien gibs.
+				CGib::SpawnRandomGibs(pev, 1, true);
+
 			// ############ //
 		}
 		gibbed = true;

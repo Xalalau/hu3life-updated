@@ -27,6 +27,10 @@
 #include "saverestore.h"
 #include "trains.h" // trigger_camera has train functionality
 #include "gamerules.h"
+// ############ hu3lifezado ############ //
+// Exposição de classes
+#include "triggers.h"
+// ############ //
 
 #define SF_TRIGGER_PUSH_START_OFF 2		   //spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE 1	   // Only fire hurt target once
@@ -78,6 +82,13 @@ void CFrictionModifier::Spawn()
 // Sets toucher's friction to m_frictionFraction (1.0 = normal friction)
 void CFrictionModifier::ChangeFriction(CBaseEntity* pOther)
 {
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Infelizmente essa entidade esta ruim no modo coop e nos nao estamos nem ai pra ela, vamos ignorar o problema
+	if (g_pGameRules->IsCoOp())
+		return;
+	// ############ //
+
 	if (pOther->pev->movetype != MOVETYPE_BOUNCEMISSILE && pOther->pev->movetype != MOVETYPE_BOUNCE)
 		pOther->pev->friction = m_frictionFraction;
 }
@@ -518,23 +529,6 @@ void CRenderFxManager::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TY
 
 
 
-class CBaseTrigger : public CBaseToggle
-{
-public:
-	void EXPORT TeleportTouch(CBaseEntity* pOther);
-	bool KeyValue(KeyValueData* pkvd) override;
-	void EXPORT MultiTouch(CBaseEntity* pOther);
-	void EXPORT HurtTouch(CBaseEntity* pOther);
-	void EXPORT CDAudioTouch(CBaseEntity* pOther);
-	void ActivateMultiTrigger(CBaseEntity* pActivator);
-	void EXPORT MultiWaitOver();
-	void EXPORT CounterUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void EXPORT ToggleUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void InitTrigger();
-
-	int ObjectCaps() override { return CBaseToggle::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-};
-
 LINK_ENTITY_TO_CLASS(trigger, CBaseTrigger);
 
 /*
@@ -553,6 +547,12 @@ void CBaseTrigger::InitTrigger()
 	SET_MODEL(ENT(pev), STRING(pev->model)); // set size and link into world
 	if (CVAR_GET_FLOAT("showtriggers") == 0)
 		SetBits(pev->effects, EF_NODRAW);
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Se for true, esse teletransporte deve funcionar com todos os jogadores de uma vez
+	teleport_all_coop = false;
+	// ############ //
 }
 
 
@@ -1338,34 +1338,6 @@ void CFireAndDie::Think()
 	UTIL_Remove(this);
 }
 
-
-#define SF_CHANGELEVEL_USEONLY 0x0002
-class CChangeLevel : public CBaseTrigger
-{
-public:
-	void Spawn() override;
-	bool KeyValue(KeyValueData* pkvd) override;
-	void EXPORT UseChangeLevel(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
-	void EXPORT TriggerChangeLevel();
-	void EXPORT ExecuteChangeLevel();
-	void EXPORT TouchChangeLevel(CBaseEntity* pOther);
-	void ChangeLevelNow(CBaseEntity* pActivator);
-
-	static edict_t* FindLandmark(const char* pLandmarkName);
-	static int ChangeList(LEVELLIST* pLevelList, int maxList);
-	static bool AddTransitionToList(LEVELLIST* pLevelList, int listCount, const char* pMapName, const char* pLandmarkName, edict_t* pentLandmark);
-	static bool InTransitionVolume(CBaseEntity* pEntity, char* pVolumeName);
-
-	bool Save(CSave& save) override;
-	bool Restore(CRestore& restore) override;
-
-	static TYPEDESCRIPTION m_SaveData[];
-
-	char m_szMapName[cchMapNameMost];	   // trigger_changelevel only:  next map
-	char m_szLandmarkName[cchMapNameMost]; // trigger_changelevel only:  landmark on next map
-	int m_changeTarget;
-	float m_changeTargetDelay;
-};
 LINK_ENTITY_TO_CLASS(trigger_changelevel, CChangeLevel);
 
 // Global Savedata for changelevel trigger
@@ -1495,6 +1467,17 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity* pActivator)
 	// Don't work in deathmatch
 	if (g_pGameRules->IsDeathmatch())
 		return;
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Changelevel do coop eh diferente no final
+	if (g_pGameRules->IsCoOp())
+	{
+		g_pGameRules->ChangeLevelCoopToogle();
+
+		return;
+	}
+	// ############ //
 
 	// Some people are firing these multiple times in a frame, disable
 	if (gpGlobals->time == pev->dmgtime)
@@ -1927,6 +1910,44 @@ void CBaseTrigger::TeleportTouch(CBaseEntity* pOther)
 
 	pevToucher->fixangle = 1;
 	pevToucher->velocity = pevToucher->basevelocity = g_vecZero;
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Teletransportes de cutscenes precisam de um tratamento especial
+	// Obs: pOther->IsPlayer() garante que nao vamos mandar as pessoas para locais bizarros de NPCs
+	if (g_pGameRules->IsCoOp() && pOther->IsPlayer() && teleport_all_coop)
+
+		// ADD CHECAGEM DE NOME AQUI
+		// Se for um teleport para 1 pessoa, sair do loop
+
+	{
+		CBaseEntity * hu3Player;
+
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			hu3Player = CBaseEntity::Instance(g_engfuncs.pfnPEntityOfEntIndex(i));
+
+			if (hu3Player && hu3Player->IsPlayer())
+			{
+				// Se o jogador ja tiver sido processado, pulamos ele, caso contrario desativamos a fisica e seguimos
+				// !!ATENCAO!! Eh proposital que um player nao desative a sua fisica como todos os outros!
+				// Precisamos de pelo menos 1 pessoa em estado normal para que tudo funcione bem
+				if (hu3Player == pOther)
+					continue;
+				else
+					g_pGameRules->DisablePhysics(hu3Player);
+
+				// Aplicar o teletransporte
+				hu3Player->pev->origin = tmp;
+				hu3Player->pev->angles = VARS(pentTarget)->angles;
+				hu3Player->pev->v_angle = VARS(pentTarget)->v_angle;
+				hu3Player->pev->fixangle = 1;
+				hu3Player->pev->velocity = g_vecZero;
+				hu3Player->pev->basevelocity = g_vecZero;
+			}
+		}
+	}
+	// ############ //
 }
 
 

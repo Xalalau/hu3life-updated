@@ -1562,7 +1562,7 @@ public:
 
 	void PrimaryAttack() override;
 
-	int iItemSlot() override;
+	int iItemSlot() override { return 1; }
 
 	bool GetItemInfo(ItemInfo* p) override;
 
@@ -1618,6 +1618,8 @@ private:
 #else
 	int hu3_spray_color[2];
 #endif
+	// [COOP] Resetar a selecao no HUD
+	bool reset_hud;
 	// ############ //
 };
 
@@ -1677,7 +1679,7 @@ public:
 
 	void SetWeaponData(const weapon_data_t& data) override;
 
-	int iItemSlot() override;
+	int iItemSlot() override { return 1; }
 
 	bool GetItemInfo(ItemInfo* p) override;
 

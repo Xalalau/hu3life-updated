@@ -122,7 +122,8 @@ void CFlyingTourosSecondary::SpinTouch(CBaseEntity *pOther)
 
 	// Spawn a Touros weapon
 	CBasePlayerWeapon *pItem = (CBasePlayerWeapon *)Create("weapon_eagle", pev->origin, pev->angles, edict());
-
+	pItem->pev->spawnflags |= SF_NORESPAWN;
+	
 	// Ligo o item para acesso externo
 	CDesertEagle *pItem_hu3 = (CDesertEagle *) pItem;
 
@@ -134,6 +135,7 @@ void CFlyingTourosSecondary::SpinTouch(CBaseEntity *pOther)
 
 	// Spawn a weapon box
 	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin, pev->angles, edict());
+	pWeaponBox->pev->spawnflags |= SF_NORESPAWN;
 
 	// don't let weapon box tilt.
 	pWeaponBox->pev->angles.x = 0;

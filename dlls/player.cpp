@@ -2942,6 +2942,8 @@ void CBasePlayer::Spawn()
 	hu3_cam_crosshair = 0;
 	// Era 100
 	pev->health = 169;
+	// Permitir sons de caputura de itens por padrão
+	enable_item_pickup_sound = true;
 	// ############ //
 	pev->armorvalue = 0;
 	pev->takedamage = DAMAGE_AIM;
@@ -2991,7 +2993,6 @@ void CBasePlayer::Spawn()
 	m_flFallVelocity = 0;
 
 	g_pGameRules->SetDefaultPlayerTeam(this);
-	g_pGameRules->GetPlayerSpawnSpot(this);
 
 	SET_MODEL(ENT(pev), "models/player.mdl");
 	g_ulModelIndexPlayer = pev->modelindex;
@@ -3031,7 +3032,13 @@ void CBasePlayer::Spawn()
 
 	m_flNextChatTime = gpGlobals->time;
 
-	g_pGameRules->PlayerSpawn(this);
+	// ############ hu3lifezado ############ //
+	// [COOP] Eu entro nas configuracoes do coop ou simplesmente posiciono o jogador
+	if (g_pGameRules->IsCoOp())
+		g_pGameRules->PlayerSpawn(this);
+	else
+		g_pGameRules->GetPlayerSpawnSpot(this);
+	// ############ //
 }
 
 
@@ -3403,32 +3410,39 @@ static edict_t* GiveNamedItem_Common(entvars_t* pev, const char* pszName)
 	return pent;
 }
 
-void CBasePlayer::GiveNamedItem(const char* szName)
+// ############ hu3lifezado ############ //
+// [MODO COOP]
+// Retorno a entidade para poder lidar com ela
+CBaseEntity* CBasePlayer::GiveNamedItem(const char *szName)
 {
 	auto pent = GiveNamedItem_Common(pev, szName);
 
 	if (!pent)
 	{
-		return;
+		return NULL;
 	}
 
+	auto entity = CBaseEntity::Instance(pent);
+	
 	DispatchTouch(pent, ENT(pev));
+
+	return entity;
 }
 
-void CBasePlayer::GiveNamedItem(const char* szName, int defaultAmmo)
+CBaseEntity* CBasePlayer::GiveNamedItem(const char* szName, int defaultAmmo)
 {
 	auto pent = GiveNamedItem_Common(pev, szName);
 
 	if (!pent)
 	{
-		return;
+		return NULL;
 	}
 
 	auto entity = CBaseEntity::Instance(pent);
 
 	if (!entity)
 	{
-		return;
+		return NULL;
 	}
 
 	if (auto weapon = dynamic_cast<CBasePlayerWeapon*>(entity); weapon)
@@ -3437,6 +3451,8 @@ void CBasePlayer::GiveNamedItem(const char* szName, int defaultAmmo)
 	}
 
 	DispatchTouch(pent, ENT(pev));
+
+	return entity;
 }
 
 bool CBasePlayer::FlashlightIsOn()
@@ -3926,8 +3942,13 @@ int CBasePlayer::GiveAmmo(int iCount, const char* szName, int iMax)
 		return -1;
 
 	int iAdd = V_min(iCount, iMax - m_rgAmmo[i]);
-	if (iAdd < 1)
+
+	// ############ hu3lifezado ############ //
+	// [MODO COOP]
+	// Sou obrigado a processar municao negativa no coop devido a um tipo de bug! Hack em LoadPlayerItems do CHalfLifeCoop.cpp
+	if ((!g_pGameRules->IsCoOp()) && (iAdd < 1))
 		return i;
+	// ############ //
 
 	// If this is an exhaustible weapon make sure the player has it.
 	if (const auto& ammoType = CBasePlayerItem::AmmoInfoArray[i]; ammoType.WeaponName != nullptr)
@@ -3946,7 +3967,14 @@ int CBasePlayer::GiveAmmo(int iCount, const char* szName, int iMax)
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, NULL, pev);
 		WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
-		WRITE_BYTE(iAdd);				  // amount
+		// ############ hu3lifezado ############ //
+		// [MODO COOP]
+		// Sou obrigado a processar municao negativa no coop devido a um tipo de bug! Hack em LoadPlayerItems do CHalfLifeCoop.cpp
+		if (g_pGameRules->IsCoOp())
+			WRITE_BYTE(iCount);		// amount
+		else
+			WRITE_BYTE(iAdd);		// amount
+		// ############ //
 		MESSAGE_END();
 	}
 

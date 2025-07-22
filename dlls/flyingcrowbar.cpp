@@ -126,9 +126,11 @@ void CFlyingCrowbar::SpinTouch(CBaseEntity *pOther)
 
 	// Spawn a crowbar weapon
 	CBasePlayerWeapon *pItem = (CBasePlayerWeapon *)Create("weapon_crowbar", pev->origin, pev->angles, edict());
+	pItem->pev->spawnflags |= SF_NORESPAWN;
 
 	// Spawn a weapon box
 	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin, pev->angles, edict());
+	pWeaponBox->pev->spawnflags |= SF_NORESPAWN;
 
 	// don't let weapon box tilt.
 	pWeaponBox->pev->angles.x = 0;

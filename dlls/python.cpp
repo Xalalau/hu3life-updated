@@ -317,7 +317,12 @@ class CPythonAmmo : public CBasePlayerAmmo
 	{
 		if (pOther->GiveAmmo(AMMO_357BOX_GIVE, "357", _357_MAX_CARRY) != -1)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
+
 			return true;
 		}
 		return false;

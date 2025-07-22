@@ -599,7 +599,12 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity* pOther)
 	if (pOther->AddPlayerItem(this))
 	{
 		AttachToPlayer(pPlayer);
-		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+		
+		// ############ hu3lifezado ############ //
+		// Às vezes eu quero omitir esse som irritante
+		if (pPlayer->enable_item_pickup_sound)
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+		// ############ //
 	}
 
 	SUB_UseTargets(pOther, USE_TOGGLE, 0); // UNDONE: when should this happen?

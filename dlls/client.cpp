@@ -682,10 +682,12 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 		// Set the name
 		g_engfuncs.pfnSetClientKeyValue(ENTINDEX(pEntity), infobuffer, "name", sName);
 
+		// ############ hu3lifezado ############ //
+		// Mensagens melhoradas
 		if (gpGlobals->maxClients > 1)
 		{
 			char text[256];
-			sprintf(text, "* %s changed name to %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue(infobuffer, "name"));
+			sprintf(text, "* %s foi rebatizado para %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue(infobuffer, "name"));
 			MESSAGE_BEGIN(MSG_ALL, gmsgSayText, NULL);
 			WRITE_BYTE(ENTINDEX(pEntity));
 			WRITE_STRING(text);
@@ -695,7 +697,7 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 		// team match?
 		if (g_teamplay)
 		{
-			UTIL_LogPrintf("\"%s<%i><%s><%s>\" changed name to \"%s\"\n",
+			UTIL_LogPrintf("\"%s<%i><%s><%s>\" foi rebatizado para \"%s\"\n",
 				STRING(pEntity->v.netname),
 				GETPLAYERUSERID(pEntity),
 				GETPLAYERAUTHID(pEntity),
@@ -704,13 +706,14 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 		}
 		else
 		{
-			UTIL_LogPrintf("\"%s<%i><%s><%i>\" changed name to \"%s\"\n",
+			UTIL_LogPrintf("\"%s<%i><%s><%i>\" foi rebatizado para \"%s\"\n",
 				STRING(pEntity->v.netname),
 				GETPLAYERUSERID(pEntity),
 				GETPLAYERAUTHID(pEntity),
 				GETPLAYERUSERID(pEntity),
 				g_engfuncs.pfnInfoKeyValue(infobuffer, "name"));
 		}
+		// ############ //
 	}
 
 	g_pGameRules->ClientUserInfoChanged(GetClassPtr((CBasePlayer*)&pEntity->v), infobuffer);

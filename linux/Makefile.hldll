@@ -65,6 +65,8 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/ggrenade.o \
 	$(HLDLL_OBJ_DIR)/glock.o \
 	$(HLDLL_OBJ_DIR)/gman.o \
+	$(HLDLL_OBJ_DIR)/hlcoop_gamerules.o \
+	$(HLDLL_OBJ_DIR)/hu3coop.o \
 	$(HLDLL_OBJ_DIR)/h_ai.o \
 	$(HLDLL_OBJ_DIR)/h_battery.o \
 	$(HLDLL_OBJ_DIR)/h_cine.o \

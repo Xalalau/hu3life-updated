@@ -437,7 +437,12 @@ class CShotgunAmmo : public CBasePlayerAmmo
 	{
 		if (pOther->GiveAmmo(AMMO_BUCKSHOTBOX_GIVE, "buckshot", BUCKSHOT_MAX_CARRY) != -1)
 		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ hu3lifezado ############ //
+			// Às vezes eu quero omitir esse som irritante
+			if (pOther->enable_item_pickup_sound)
+				EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			// ############ //
+
 			return true;
 		}
 		return false;
