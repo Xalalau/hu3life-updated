@@ -103,8 +103,11 @@ void ClientDisconnect(edict_t* pEntity)
 		return;
 
 	char text[256] = "";
+	// ############ hu3lifezado ############ //
+	// Mensagem de saída extremamente melhorada
 	if (!FStringNull(pEntity->v.netname))
-		snprintf(text, sizeof(text), "- %s has left the game\n", STRING(pEntity->v.netname));
+		snprintf(text, sizeof(text), "- %s meteu o peh\n", STRING(pEntity->v.netname));
+	// ############ //
 	text[sizeof(text) - 1] = 0;
 	MESSAGE_BEGIN(MSG_ALL, gmsgSayText, NULL);
 	WRITE_BYTE(ENTINDEX(pEntity));
