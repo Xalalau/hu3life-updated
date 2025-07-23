@@ -144,7 +144,6 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\dlls\flyingcrowbar.cpp" />
     <ClCompile Include="..\..\dlls\flyingmonster.cpp" />
     <ClCompile Include="..\..\dlls\flyingtouros.cpp" />
-    <ClCompile Include="..\..\dlls\flyingtourossecondary.cpp" />
     <ClCompile Include="..\..\dlls\func_break.cpp" />
     <ClCompile Include="..\..\dlls\func_parent.cpp" />
     <ClCompile Include="..\..\dlls\func_tank.cpp" />

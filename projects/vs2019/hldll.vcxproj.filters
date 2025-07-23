@@ -138,9 +138,6 @@
     <ClCompile Include="..\..\dlls\flyingtouros.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\flyingtourossecondary.cpp">
-      <Filter>Source Files\dlls</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\func_break.cpp">
       <Filter>Source Files\dlls</Filter>
     </ClCompile>

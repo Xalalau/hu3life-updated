@@ -642,7 +642,9 @@ public:
 	void Spawn();
 	void Precache();
 	void BubbleThink();
-	void SpinTouch(CBaseEntity *pOther);
+	void SpinTouch(CBaseEntity *pOther);	
+	void SetQuality(int m_quality, int m_iClip);
+	void SetMode(int m_mode);
 	CBasePlayer *m_pPlayer;
 
 private:
@@ -650,23 +652,10 @@ private:
 							 // allow the crowbar to hit the user.
 
 	unsigned short m_usCrowbar;
-};
 
-class CFlyingTourosSecondary : public CBasePlayerWeapon
-{
-public:
-	void Spawn();
-	void Precache();
-	void BubbleThink();
-	void SpinTouch(CBaseEntity *pOther);
-	void SetQuality(int quality, int m_iClip);
-	CBasePlayer *m_pPlayer;
-
-private:
 	int quality;
 	int iClip;
-	EHANDLE m_hOwner;        // Original owner is stored here so we can
-							 // allow the Touros to hit the user.
+	int mode;
 };
 
 enum python_e
@@ -1485,6 +1474,8 @@ public:
 	void ShrapnelDamage(int chance, int min_damage, int max_damage);
 	// Perder toda a municao
 	bool RandomlyLostAllAmmo();
+	// Varejar a arma
+	void ThrowWeapon(bool isReloading);
 	// ############ //
 
 	bool UseDecrement() override
@@ -1516,6 +1507,8 @@ private:
 	cvar_t	*hu3_touros_gambiarra_qualidade;
 	// Cada defeito da arma tem um bônus que é adicionado de 0 até 100% dependendo dessa qualidade 9 até 1;
 	float m_qualitypercentageeffect;
+	// Indico que acabei de fazer um reload
+	bool m_reloaded;
 
 public:
 	// Qualidade da arma (de 1 ate 9, nunca 10)

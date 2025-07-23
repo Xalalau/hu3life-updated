@@ -1,5 +1,5 @@
 // ##############################
-// Arma Touros quebrando, adaptado de:
+// Tiro secundario da arma Touros, adaptado de:
 // http://web.archive.org/web/20020717063241/http://lambda.bubblemod.org/tuts/crowbar/
 // ##############################
 
@@ -131,9 +131,66 @@ void CFlyingTouros::SpinTouch(CBaseEntity *pOther)
 	// Throw Touros along the normal so it looks kinda
 	// like a ricochet. This would be better if I actually 
 	// calcualted the reflection angle, but I'm lazy. :)
-	pev->velocity = tr.vecPlaneNormal * 100;
+	// Se o jogador nao pode pegar a arma do chao, arremesso ela
+	if (mode == 1)
+		pev->velocity = tr.vecPlaneNormal * 100;
+	// Caso contrario
+	else if (mode == 0)
+	{
+		// Don't draw the flying Touros anymore. 
+		pev->effects |= EF_NODRAW;
+		pev->solid = SOLID_NOT;
+
+		// Spawn a Touros weapon
+		CBasePlayerWeapon *pItem = (CBasePlayerWeapon *)Create("weapon_eagle", pev->origin, pev->angles, edict());
+
+		// Ligo o item para acesso externo
+		CDesertEagle *pItem_hu3 = (CDesertEagle *)pItem;
+
+		// Salvo a qualidade incial da arma
+		pItem_hu3->m_quality = quality;
+
+		// Salvo a quantidade inicial de balas
+		pItem_hu3->m_iClip2 = iClip;
+
+		// Spawn a weapon box
+		CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", pev->origin, pev->angles, edict());
+
+		// don't let weapon box tilt.
+		pWeaponBox->pev->angles.x = 0;
+		pWeaponBox->pev->angles.z = 0;
+
+		// remove the weapon box after 2 mins. // Nope, 10 minutos
+		pWeaponBox->pev->nextthink = gpGlobals->time + 1200;
+		pWeaponBox->SetThink(&CWeaponBox::Kill);
+
+		// Pack the Touros in the weapon box
+		pWeaponBox->PackWeapon(pItem);
+
+		// Throw Touros or WB along the normal so it looks kinda
+		// like a ricochet. This would be better if I actually 
+		// calcualted the reflection angle, but I'm lazy. :)
+		pWeaponBox->pev->velocity = tr.vecPlaneNormal * 100;
+
+		// Remove this flying_Touros from the world.
+		SetThink(&CBaseEntity::SUB_Remove);
+	}
 
 	pev->nextthink = gpGlobals->time + .1;
+}
+
+void CFlyingTouros::SetQuality(int m_quality, int m_iClip)
+{
+	// Pego a qualidade na arma
+	quality = m_quality;
+	// Pego a municao carregada na arma
+	iClip = m_iClip;
+}
+
+void CFlyingTouros::SetMode(int m_mode)
+{
+	// Pego o modo da arma;
+	mode = m_mode;
 }
 
 void CFlyingTouros::BubbleThink(void)
