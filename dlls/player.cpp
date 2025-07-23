@@ -2998,6 +2998,16 @@ void CBasePlayer::Spawn()
 	g_ulModelIndexPlayer = pev->modelindex;
 	pev->sequence = LookupActivity(ACT_IDLE);
 
+	// ############ hu3lifezado ############ //
+	// Decidir se o jogador tem suit
+	// nota: trocar de bodygroup so funciona executando o jogo normalmente!!! Nunca da certo pelo debbuger!!!
+	if (HasSuit()) {
+		SetBodygroup(1, 0);
+	} else {
+		SetBodygroup(1, 1);
+	}
+	// ############ //
+
 	if (FBitSet(pev->flags, FL_DUCKING))
 		UTIL_SetSize(pev, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX);
 	else

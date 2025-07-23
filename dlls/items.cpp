@@ -191,6 +191,15 @@ class CItemSuit : public CItem
 			EMIT_SOUND_SUIT(pPlayer->edict(), "!HEV_AAx"); // long version of suit logon
 
 		pPlayer->SetHasSuit(true);
+
+		// ############ hu3lifezado ############ //
+		// Trocar para o suit
+		// nota: trocar de bodygroup so funciona executando o jogo normalmente!!! Nunca da certo pelo debbuger!!!
+		if (strcmp(STRING(pPlayer->pev->model), "models/player.mdl") == 0) {
+			pPlayer->SetBodygroup(1, 0);
+		}
+		// ############ //
+
 		return true;
 	}
 };
