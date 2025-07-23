@@ -119,10 +119,9 @@ void CFlyingTouros::SpinTouch(CBaseEntity *pOther)
 	// Get the unit vector in the direction of motion.
 	Vector vecDir = pev->velocity.Normalize();
 
-	// Reposiciona virado para cima
-#ifndef CLIENT_DLL
+	// Reposiciono a arma deitada e apontando para qualquer lado
 	pev->angles = vecDir;
-#endif
+	pev->angles.y = UTIL_SharedRandomLong(m_pPlayer->random_seed, 0, 360);
 
 	// Trace a line along the velocity vector to get the normal at impact.
 	TraceResult tr;
