@@ -2,7 +2,6 @@
 // HU3-LIFE port da desert eagle
 // ##############################
 
-
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
@@ -17,27 +16,6 @@
 *   without written permission from Valve LLC.
 *
 ****/
-
-
-
-
-
-/*
-
-
-ATENÇÃO!!!!!!
-
-A intenção dessa arma é dela ser bugada, quebrada, com defeitos, e que o jogador tenha que lidar com isso.
-
-!!!PORÉM!!! Ela ficou totalmente bugada, com erros que não sei nem resolver. Isso é uma feature agora.
-
-
-*/
-
-
-
-
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -57,7 +35,6 @@ A intenção dessa arma é dela ser bugada, quebrada, com defeitos, e que o joga
 #endif
 // ############ //
 
-
 LINK_ENTITY_TO_CLASS(weapon_eagle, CDesertEagle);
 
 void CDesertEagle::Spawn()
@@ -66,8 +43,6 @@ void CDesertEagle::Spawn()
 	Precache();
 	m_iId = WEAPON_DESERT_EAGLE;
 	SET_MODEL(ENT(pev), "models/w_desert_eagle.mdl");
-
-	m_iDefaultAmmo = DESERT_EAGLE_DEFAULT_GIVE;
 
 	// ############ hu3lifezado ############ //
 	// Tempo ate processar a nova chance da arma atirar sozinha
@@ -85,7 +60,7 @@ void CDesertEagle::Spawn()
 	// Controlar retirada de balas no caso de arma jogada
 	m_iClip2 = -1;
 #ifdef CLIENT_DLL
-	// Server -> client: Comando para copiarmos valores de qualidade inicial 
+	// Server -> client: Comando para copiarmos valores de qualidade inicial
 	if (gEngfuncs.pfnGetCvarFloat("hu3_touros_qualidade_inicial") == 0)
 		hu3_touros_qualidade_inicial = gEngfuncs.pfnRegisterVariable("hu3_touros_qualidade_inicial", "0", 0);
 #endif
@@ -133,7 +108,6 @@ bool CDesertEagle::GetItemInfo(ItemInfo* p)
 bool CDesertEagle::Deploy()
 {
 	// ############ hu3lifezado ############ //
-
 	// Inicializo o controle da animação de reload
 	m_reloaded = false;
 
@@ -183,8 +157,6 @@ void CDesertEagle::WeaponIdle()
 	// Se estiver voltando de um reload, termino jogando a arma fora
 	if (m_reloaded)
 	{
-		ThrowWeapon(false);
-
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
 		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.8;
 		m_flNextSecondaryAttack = gpGlobals->time + 1.8;
@@ -303,8 +275,8 @@ bool CDesertEagle::RandomlyLostAllAmmo()
 		// Um bando de faisca
 		for (i = 0; i <= 5; i++)
 			UTIL_Sparks(m_pPlayer->GetGunPosition() + gpGlobals->v_forward * 22 + gpGlobals->v_right * 10);
-
 #endif
+
 		// Tchau municao
 		m_iClip = 0;
 		m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] = 0;
@@ -325,7 +297,7 @@ void CDesertEagle::ShrapnelDamage(int chance, int min_damage, int max_damage)
 		float damage = RANDOM_LONG(min_damage, max_damage);
 		TraceResult tr = UTIL_GetGlobalTrace();
         ClearMultiDamage();
-		m_pPlayer->TraceAttack(pev, damage, pev->velocity.Normalize(), &tr, DMG_BLAST); // 99 de dano e ainda dissolve os inimigos kk
+		m_pPlayer->TraceAttack(pev, damage, pev->velocity.Normalize(), &tr, DMG_BLAST);
 		ApplyMultiDamage(pev, m_pPlayer->pev);
 
 		UTIL_ScreenFade(m_pPlayer, Vector(255, 0, 0), 0.2, 0.1, 128, FFADE_IN);
@@ -534,9 +506,6 @@ void CDesertEagle::PrimaryAttackWait()
 		// Checar se eh uma bala valida
 		if (m_iClip == 0)
 		{
-			if (m_iClip == 7)
-				--m_iClip;
-
 			// Falar e recarregar
 			if (m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] <= 0)
 				m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
@@ -562,8 +531,8 @@ void CDesertEagle::PrimaryAttackWait()
 			m_iClip == 0, 0);
 	}
 
-	// Teste de sincronia das balas
 	/*
+	// Teste de sincronia das balas
 #ifndef CLIENT_DLL
 	ALERT(at_console, "SERVER\n");
 #else
@@ -580,7 +549,7 @@ void CDesertEagle::SecondaryAttack()
 	ThrowWeapon(true);
 }
 
-// Tiro secundario, adaptado de:
+// Varejar a arma, adaptado de:
 // http://web.archive.org/web/20020717063241/http://lambda.bubblemod.org/tuts/crowbar/
 void CDesertEagle::ThrowWeapon(bool isCollectable)
 {
@@ -593,7 +562,7 @@ void CDesertEagle::ThrowWeapon(bool isCollectable)
 		m_iClip = 0;
 	}
 	// Only throw if we were able to detatch from player.
-	else if (!isCollectable || m_pPlayer->RemovePlayerItem(this))
+	else if (!isCollectable && m_pPlayer->RemovePlayerItem(this))
 	{
 		// Get the origin, direction, and fix the angle of the throw.
 		Vector vecSrc = m_pPlayer->GetGunPosition();
@@ -639,7 +608,6 @@ void CDesertEagle::ThrowWeapon(bool isCollectable)
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, "weapons/cbar_miss1.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0, 0xF));
 #endif
 
-		// Zero a qualidade
 		if (isCollectable)
 		{
 			// Zero a qualidade e seus efeitos
@@ -650,7 +618,7 @@ void CDesertEagle::ThrowWeapon(bool isCollectable)
 			// But we destroy this weapon anyway so... thppt. 
 			m_flNextSecondaryAttack = gpGlobals->time + 0.75;
 
-		// Mensagem
+			// Mensagem
 #ifndef CLIENT_DLL
 			UTIL_SayText("Voce jogou sua arma Cornus fora!|g", m_pPlayer);
 #endif
@@ -672,10 +640,10 @@ void CDesertEagle::Reload()
 	if (m_jammedweapon)
 		m_jammedweapon = false;
 
-	if (m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] > 0)
+	if (m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] > 0 && !m_reloaded)
 	{
- 		// Tempo reajustado (1.5)
-		const bool bResult = DefaultReload(GLOCK_MAX_CLIP, m_iClip ? DEAGLE_RELOAD : DEAGLE_RELOAD_NOSHOT, 3.7, 1);
+		// Tempo reajustado (1.5)
+		const bool bResult = DefaultReload(m_iClip ? DEAGLE_RELOAD : DEAGLE_RELOAD_NOSHOT, 1.9, 1);
 
 		if (bResult)
 		{
