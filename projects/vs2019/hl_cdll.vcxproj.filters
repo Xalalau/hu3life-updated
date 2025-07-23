@@ -324,11 +324,11 @@
     <ClCompile Include="..\..\cl_dll\particleman\CBaseParticle.cpp">
       <Filter>Source Files\cl_dll\particleman</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\dlls\knife.cpp">
-      <Filter>Source Files\dlls\weapons</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\dlls\pipewrench.cpp">
-      <Filter>Source Files\dlls\weapons</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dlls\knife.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

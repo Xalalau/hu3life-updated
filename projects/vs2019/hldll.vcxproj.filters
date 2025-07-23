@@ -402,14 +402,17 @@
     <ClCompile Include="..\..\public\interface.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\flyingcrowbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dlls\knife.cpp">
-      <Filter>Source Files\dlls\weapons</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\pipewrench.cpp">
-      <Filter>Source Files\dlls\weapons</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dlls\whores.cpp">
-      <Filter>Source Files\dlls\weapons</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

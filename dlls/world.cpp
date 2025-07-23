@@ -545,10 +545,17 @@ std::string TrimQuotes(const std::string& str)
 
 void LoadAndRunMapCommands()
 {
+#ifdef WIN32
+	// Isso fica no minwindef.h mas a inclusao da erros que eu nao sei resolver.
+	char szConfigName[260];
+	char szGameDir[260];
+	char szBuffer[260];
+#else
 	char szConfigName[PATH_MAX];
-
 	char szGameDir[PATH_MAX];
 	char szBuffer[PATH_MAX];
+#endif
+
 	GET_GAME_DIR(szBuffer);
 	strncpy(szGameDir, szBuffer, sizeof(szGameDir));
 	szGameDir[sizeof(szGameDir) - 1] = '\0';

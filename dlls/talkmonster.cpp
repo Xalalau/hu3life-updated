@@ -1174,7 +1174,7 @@ bool CTalkMonster::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, f
 	// ############ hu3lifezado ############ //
 	// Nao aplica dano caso a flag esteja marcada
 	if (FBitSet(pev->spawnflags, SF_MONSTER_GODMODE))
-		return;
+		return false;
 	// ############ //
 
 	if (IsAlive())
