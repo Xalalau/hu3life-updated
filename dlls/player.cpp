@@ -3953,12 +3953,8 @@ int CBasePlayer::GiveAmmo(int iCount, const char* szName, int iMax)
 
 	int iAdd = V_min(iCount, iMax - m_rgAmmo[i]);
 
-	// ############ hu3lifezado ############ //
-	// [MODO COOP]
-	// Sou obrigado a processar municao negativa no coop devido a um tipo de bug! Hack em LoadPlayerItems do CHalfLifeCoop.cpp
-	if ((!g_pGameRules->IsCoOp()) && (iAdd < 1))
+	if (iAdd < 1)
 		return i;
-	// ############ //
 
 	// If this is an exhaustible weapon make sure the player has it.
 	if (const auto& ammoType = CBasePlayerItem::AmmoInfoArray[i]; ammoType.WeaponName != nullptr)
@@ -3977,14 +3973,7 @@ int CBasePlayer::GiveAmmo(int iCount, const char* szName, int iMax)
 		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, NULL, pev);
 		WRITE_BYTE(GetAmmoIndex(szName)); // ammo ID
-		// ############ hu3lifezado ############ //
-		// [MODO COOP]
-		// Sou obrigado a processar municao negativa no coop devido a um tipo de bug! Hack em LoadPlayerItems do CHalfLifeCoop.cpp
-		if (g_pGameRules->IsCoOp())
-			WRITE_BYTE(iCount);		// amount
-		else
-			WRITE_BYTE(iAdd);		// amount
-		// ############ //
+		WRITE_BYTE(iAdd);		// amount
 		MESSAGE_END();
 	}
 
