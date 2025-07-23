@@ -643,7 +643,8 @@ public:
 	void Precache();
 	void BubbleThink();
 	void SpinTouch(CBaseEntity *pOther);	
-	void SetQuality(int m_quality, int m_iClip);
+	void SaveQualityAndClip(int m_quality, int m_iClip);
+	int GetQuality(void);
 	void SetMode(int m_mode);
 	CBasePlayer *m_pPlayer;
 
@@ -1445,7 +1446,8 @@ enum DesertEagleAnim
 	DEAGLE_RELOAD_NOSHOT,
 	DEAGLE_RELOAD,
 	DEAGLE_DRAW,
-	DEAGLE_HOLSTER
+	DEAGLE_HOLSTER,
+	DEAGLE_SWINGING
 };
 
 class CDesertEagle : public CBasePlayerWeapon
@@ -1476,6 +1478,8 @@ public:
 	bool RandomlyLostAllAmmo();
 	// Varejar a arma
 	void ThrowWeapon(bool isReloading);
+	// Atirar na hora certa
+	void PrimaryAttackWait(void);
 	// ############ //
 
 	bool UseDecrement() override
@@ -1505,17 +1509,13 @@ private:
 	bool m_firstmessage;
 	// Comando para copiarmos valores de qualidade do server para o client
 	cvar_t	*hu3_touros_gambiarra_qualidade;
-	// Cada defeito da arma tem um bônus que é adicionado de 0 até 100% dependendo dessa qualidade 9 até 1;
+	// Cada defeito da arma tem um bonus que eh adicionado de 0 ate 100% dependendo dessa qualidade 9 ate 1;
 	float m_qualitypercentageeffect;
 	// Indico que acabei de fazer um reload
 	bool m_reloaded;
 #ifdef CLIENT_DLL
 	// Sincronida da qualidade inicial
 	cvar_t	*hu3_touros_qualidade_inicial;
-	// Sincronida da municao primaria inicial
-	cvar_t	*hu3_touros_municao_inicial;
-	// Sincronida da municao primaria continuamente
-	cvar_t	*hu3_touros_municao_sync;
 #endif
 
 public:
