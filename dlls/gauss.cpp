@@ -173,7 +173,7 @@ void CGauss::PrimaryAttack()
 {
 	// ############ hu3lifezado ############ //
 	// Anel e liberado
-	m_iSpriteTextureRange = 250;
+	m_iSpriteTextureRange = 130;
 	SonicAttack(2);
 	m_iSpriteTextureRange = 0;
 
