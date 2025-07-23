@@ -176,7 +176,12 @@ inline bool FStringNull(int iString)
 #define DONT_BLEED -1
 #define BLOOD_COLOR_RED (byte)247
 #define BLOOD_COLOR_YELLOW (byte)195
-#define BLOOD_COLOR_GREEN BLOOD_COLOR_YELLOW
+// ############ hu3lifezado ############ //
+// kkk A Valve trocou verde por amarelo em algum momento. "Consertei" isso
+// Paleta: https://forums.alliedmods.net/showthread.php?t=159200
+//#define BLOOD_COLOR_GREEN BLOOD_COLOR_YELLOW
+#define BLOOD_COLOR_GREEN (byte)184
+// ############
 
 typedef enum
 {
