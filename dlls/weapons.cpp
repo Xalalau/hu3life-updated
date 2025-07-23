@@ -1282,11 +1282,6 @@ void CWeaponBox::Touch(CBaseEntity* pOther)
 					snprintf(value, 2, "%d", pItem_hu3->m_quality);
 					strcat(strcat(command, value), "\n");
 					CLIENT_COMMAND(pPlayer->edict(), command);
-					// Municao primaria
-					strcpy(command, "hu3_touros_municao_inicial ");
-					snprintf(value, 2, "%d", pItem_hu3->m_iClip2);
-					strcat(strcat(command, value), "\n");
-					CLIENT_COMMAND(pPlayer->edict(), command);
 				}
 				// ############ //
 

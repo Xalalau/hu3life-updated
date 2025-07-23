@@ -164,7 +164,7 @@ void CFlyingTouros::SpinTouch(CBaseEntity *pOther)
 		pWeaponBox->PackWeapon(pItem);
 
 		// Guardo a municao na caixa
-		pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), iClip);
+		//pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), iClip);
 
 		// Throw Touros or WB along the normal so it looks kinda
 		// like a ricochet. This would be better if I actually 
@@ -178,12 +178,10 @@ void CFlyingTouros::SpinTouch(CBaseEntity *pOther)
 	pev->nextthink = gpGlobals->time + .1;
 }
 
-void CFlyingTouros::SaveQualityAndClip(int m_quality, int m_iClip)
+void CFlyingTouros::SaveQuality(int m_quality)
 {
 	// Pego a qualidade da arma
 	quality = m_quality;
-	// Pego a municao carregada na arma
-	iClip = m_iClip;
 }
 
 void CFlyingTouros::SetMode(int m_mode)

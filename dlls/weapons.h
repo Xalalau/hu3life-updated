@@ -126,7 +126,10 @@ public:
 #define SATCHEL_MAX_CLIP WEAPON_NOCLIP
 #define TRIPMINE_MAX_CLIP WEAPON_NOCLIP
 #define SNARK_MAX_CLIP WEAPON_NOCLIP
-
+// ############ hulifezado ############ //
+// Novas armas
+#define DEAGLE_MAX_CLIP 17
+// ############ //
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE 17
@@ -643,7 +646,7 @@ public:
 	void Precache();
 	void BubbleThink();
 	void SpinTouch(CBaseEntity *pOther);	
-	void SaveQualityAndClip(int m_quality, int m_iClip);
+	void SaveQuality(int m_quality);
 	void SetMode(int m_mode);
 	CBasePlayer *m_pPlayer;
 
@@ -654,7 +657,6 @@ private:
 	unsigned short m_usCrowbar;
 
 	int quality;
-	int iClip;
 	int mode;
 };
 
@@ -1477,8 +1479,10 @@ public:
 	bool RandomlyLostAllAmmo();
 	// Varejar a arma
 	void ThrowWeapon(bool isReloading);
-	// Atirar na hora certa
-	void PrimaryAttackWait(void);
+	// Tiros atrasados
+	void DelayedShot();
+	// Tiros instantaneos
+	void InstantShot(bool forceShot);
 	// ############ //
 
 	bool UseDecrement() override
@@ -1504,14 +1508,12 @@ private:
 	float m_waitforthegametobeready;
 	// Arma travada
 	bool m_jammedweapon;
-	// Imprimir mensagem quando o jogador coleta a arma
-	bool m_firstmessage;
-	// Comando para copiarmos valores de qualidade do server para o client
-	cvar_t	*hu3_touros_gambiarra_qualidade;
 	// Cada defeito da arma tem um bonus que eh adicionado de 0 ate 100% dependendo dessa qualidade 9 ate 1;
 	float m_qualitypercentageeffect;
-	// Indico que acabei de fazer um reload
-	bool m_reloaded;
+	// Diz se estamos aguardando um tiro
+	bool m_hasDelayedShot;
+	// Indica se precisamos informar a qualidade da arma
+	bool m_tellQuality;
 #ifdef CLIENT_DLL
 	// Sincronida da qualidade inicial
 	cvar_t	*hu3_touros_qualidade_inicial;
@@ -1520,8 +1522,6 @@ private:
 public:
 	// Qualidade da arma (de 1 ate 9, nunca 10)
 	int m_quality;
-	// Recuperar numero inicial de balas / Controlar retirada de balas no caso de arma jogada
-	int m_iClip2;
 	// ############ //
 };
 
