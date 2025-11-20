@@ -1,3 +1,16 @@
+hu3life-updated
+======================
+
+![Logo](http://i.imgur.com/K7b0J4a.png)
+
+[Acessem nossa WIKI para informações e downloads extras](https://github.com/xalalau/hu3life-updated/wiki).
+
+Suportamos Linux e Windows nativamente.
+
+Este repositório contém os códigos de client.* e hl.* usados no Hu3-Life, e está baseado em uma versão otimizada do HL1.
+
+Conheçam mais sobre o mod: [Facebook](https://www.facebook.com/hu3lifeoficial/), [Moddb](http://www.moddb.com/mods/hu3-life), [Steam](https://steamcommunity.com/groups/Hu3-Life) e [Discord](https://discord.gg/tQpg95KhAp).
+
 # About
 
 [Half-Life Updated](https://github.com/twhl-community/halflife-updated), [Opposing Force Updated](https://github.com/twhl-community/halflife-op4-updated) and [Blue Shift Updated](https://github.com/twhl-community/halflife-bs-updated) are repositories that provide updated versions of the Half-Life SDK, targeted to the 3 Half-Life 1 PC games officially available.
