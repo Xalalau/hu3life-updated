@@ -155,10 +155,10 @@ void CHalfLifeRules::PlayerThink(CBasePlayer* pPlayer)
 		int j, count_sp_remove = 0;
 
 		// Contar a quantidade de entidades a remover
-		char* tok = strtok(sp_remove, ";");
+		char* tok = strtok(sp_remove, "|");
 		while (tok != NULL) {
 			count_sp_remove++;
-			tok = strtok(NULL, ";");
+			tok = strtok(NULL, "|");
 		}
 
 		if (count_sp_remove > 0)
@@ -182,7 +182,7 @@ void CHalfLifeRules::PlayerThink(CBasePlayer* pPlayer)
 						break;
 					}
 					tok += strlen(tok) + 1;
-					tok += strspn(tok, ";");
+					tok += strspn(tok, "|");
 				}
 			}
 		}

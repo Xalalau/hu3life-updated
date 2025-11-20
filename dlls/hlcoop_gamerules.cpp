@@ -239,27 +239,27 @@ void CBaseHalfLifeCoop::UpdateGameMode(CBasePlayer *pPlayer)
 	int j, count_coop_remove = 0, count_coop_nophysics = 0, count_coop_teleport_plys = 0;
 
 	// Contar a quantidade de entidades a desativar a fisica
-	char* tok1 = strtok(coop_nophysics, ";");
+	char* tok1 = strtok(coop_nophysics, "|");
 	while (tok1 != NULL)
 	{
 		count_coop_nophysics++;
-		tok1 = strtok(NULL, ";");
+		tok1 = strtok(NULL, "|");
 	}
 
 	// Contar a quantidade de entidades de teletransporte generalizado
-	char* tok2 = strtok(coop_teleport_plys, ";");
+	char* tok2 = strtok(coop_teleport_plys, "|");
 	while (tok2 != NULL)
 	{
 		count_coop_teleport_plys++;
-		tok2 = strtok(NULL, ";");
+		tok2 = strtok(NULL, "|");
 	}
 
 	// Contar a quantidade de entidades a remover
-	char* tok3 = strtok(coop_remove, ";");
+	char* tok3 = strtok(coop_remove, "|");
 	while (tok3 != NULL)
 	{
 		count_coop_remove++;
-		tok3 = strtok(NULL, ";");
+		tok3 = strtok(NULL, "|");
 	}
 
 	if (count_coop_remove > 0 || count_coop_nophysics > 0 || count_coop_teleport_plys > 0)
@@ -287,7 +287,7 @@ void CBaseHalfLifeCoop::UpdateGameMode(CBasePlayer *pPlayer)
 					break;
 				}
 				tok1 += strlen(tok1) + 1;
-				tok1 += strspn(tok1, ";");
+				tok1 += strspn(tok1, "|");
 			}
 
 			if (next)
@@ -309,7 +309,7 @@ void CBaseHalfLifeCoop::UpdateGameMode(CBasePlayer *pPlayer)
 						break;
 					}
 					tok2 += strlen(tok2) + 1;
-					tok2 += strspn(tok2, ";");
+					tok2 += strspn(tok2, "|");
 				}
 			}
 
@@ -327,7 +327,7 @@ void CBaseHalfLifeCoop::UpdateGameMode(CBasePlayer *pPlayer)
 					break;
 				}
 				tok3 += strlen(tok3) + 1;
-				tok3 += strspn(tok3, ";");
+				tok3 += strspn(tok3, "|");
 			}
 
 		}
