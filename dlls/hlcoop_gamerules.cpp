@@ -735,8 +735,25 @@ Vector CBaseHalfLifeCoop::GetPlySpawnPos(int CoopPlyIndex)
 		spawnPoint = UTIL_FindEntityByString(NULL, "targetname", hu3Train);
 
 		if (spawnPoint)
-			// Garante que o jogador nao prenda no chao do trem do inicio do HL
-			absPos = Vector(spawnPoint->pev->origin.x, spawnPoint->pev->origin.y, spawnPoint->pev->origin.z + 75);
+		{
+			// Garante que o jogador comece no trem padrão do HL em uma ótima posição
+			char* autoFixPos = (char*)CVAR_GET_STRING("coop_train_spawnpoint_fix_pos");
+			if (!FStrEq(autoFixPos, "0"))
+			{
+				UTIL_MakeVectors(spawnPoint->pev->angles);
+
+				Vector forward = gpGlobals->v_forward;
+				Vector right = gpGlobals->v_right;
+
+				Vector forwardFix = forward * -100;
+				Vector rigtFix = right * 20;
+
+				absPos = Vector(spawnPoint->pev->origin.x, spawnPoint->pev->origin.y, spawnPoint->pev->origin.z + 45) + forwardFix + rigtFix;
+			// Garante que o jogador comece no trem sem ficar preso no chão
+			} else {
+				absPos = Vector(spawnPoint->pev->origin.x, spawnPoint->pev->origin.y, spawnPoint->pev->origin.z + 75);
+			}
+		}
 	}
 
 	// Configuramos o jogador no caso dele NAO ser novo no server (ja ter passado por changelevel)
@@ -1055,10 +1072,15 @@ void CBaseHalfLifeCoop::ChangeLevelCoop()
 		}
 	}
 
-	// Reseto o comando mp_hu3_trainspawnpoint
+	// Reseto o comando coop_train_spawnpoint
 	char* hTarget = (char*)CVAR_GET_STRING("coop_train_spawnpoint");
 	if (!FStrEq(hTarget, "0"))
 		CVAR_SET_STRING("coop_train_spawnpoint", "0");
+
+	// Reseto o comando coop_train_spawnpoint_fix_pos
+	char* hTarget2 = (char*)CVAR_GET_STRING("coop_train_spawnpoint_fix_pos");
+	if (!FStrEq(hTarget2, "0"))
+		CVAR_SET_STRING("coop_train_spawnpoint_fix_pos", "0");
 
 	// Preencho a tabela de infos dos players novamente
 	for (i = 0; i < gpGlobals->maxClients; i++)

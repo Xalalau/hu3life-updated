@@ -55,8 +55,11 @@ cvar_t hu3_gore = {"hu3_gore", "1", FCVAR_SERVER};
 
 // [Modo COOP] :
 
-// Corrigir o spawn de trens
+// Seta uma entidade para ser o spawn do jogador, usar o nome do trem
 cvar_t	coop_train_spawnpoint = {"coop_train_spawnpoint","0", FCVAR_SERVER};
+// Automaticamente coloca o jogador em uma posição segura no trem padrão do HL
+// Depende de coop_train_spawnpoint
+cvar_t	coop_train_spawnpoint_fix_pos = {"coop_train_spawnpoint_fix_pos","0", FCVAR_SERVER};
 // Adicionar delay no inicio do movimento de trens
 cvar_t	coop_train_delay = {"coop_train_delay","0", FCVAR_SERVER | FCVAR_UNLOGGED};
 // Forcar uma velocidade de inicio no trem (resolve ele nao andar no c0a0)
@@ -548,6 +551,7 @@ void GameDLLInit()
 	CVAR_REGISTER(&coop);
 	// Corrigir o spawn de trens
 	CVAR_REGISTER(&coop_train_spawnpoint);
+	CVAR_REGISTER(&coop_train_spawnpoint_fix_pos);
 	// Adicionar delay no inicio do movimento de trens
 	CVAR_REGISTER(&coop_train_delay);
 	// Forcar uma velocidade de inicio no trem (resolve ele nao andar no c0a0)
