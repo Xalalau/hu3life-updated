@@ -24,7 +24,10 @@
 #include "schedule.h"
 #include "explode.h"
 #include "zombie.h"
+#include "effects.h"
 #include "butano.h"
+
+int g_iButaneFireSprite = 0;
 
 LINK_ENTITY_TO_CLASS(monster_butano, CButano);
 
@@ -109,6 +112,9 @@ void CButano::Precache()
 	PRECACHE_SOUND("butano/plam-pluim-plam-plam.wav");
 	PRECACHE_SOUND("butano/plam-pluim-plam-plim.wav");
 	PRECACHE_SOUND("butano/plam-pluim8.wav");
+
+	// Sprite de incêndio
+	g_iButaneFireSprite = PRECACHE_MODEL("sprites/fire.spr");
 }
 
 // Busca pontos de spawn (info_targets) e escolhe um (aleatoriamente)
@@ -159,6 +165,42 @@ void CButano::SetNewSpawn()
 	}
 }
 
+void CreateButaneFire(const Vector& origin)
+{
+	// Hardcoded 6 segundos
+
+	// Sprite
+
+	CSprite* pSprite = CSprite::SpriteCreate("sprites/fire.spr", origin, true);
+    if(!pSprite)
+        return;
+
+    pSprite->pev->rendermode = kRenderTransAdd;
+    pSprite->pev->renderamt = 255;
+    pSprite->pev->scale = 4.0f;
+
+    pSprite->AnimateAndDie(2.5);
+
+	// Iluminação
+
+    float lifeTime = 6;
+    int radius = 20;
+    int life = (int)(lifeTime * 10.0f);
+
+    MESSAGE_BEGIN(MSG_PVS, SVC_TEMPENTITY, origin);
+        WRITE_BYTE(TE_DLIGHT);
+        WRITE_COORD(origin.x);
+        WRITE_COORD(origin.y);
+        WRITE_COORD(origin.z);
+        WRITE_BYTE(radius);  // radius*10
+        WRITE_BYTE(255);     // R
+        WRITE_BYTE(180);     // G
+        WRITE_BYTE(100);     // B
+        WRITE_BYTE(life);    // life*0.1s
+        WRITE_BYTE(0);       // decay
+    MESSAGE_END();
+}
+
 // HACKZAO
 // Evita que o som fique tocando apos a morte do NPC tocando outro som no mesmo canal 'CHAN_VOICE'
 void CButano::Killed(entvars_t* pevAttacker, int iGib)
@@ -167,19 +209,25 @@ void CButano::Killed(entvars_t* pevAttacker, int iGib)
 
 	// Roda o codigo da classe herdada
 	CZombie::Killed(pevAttacker, iGib);
+
+    // Fogo que ilumina por alguns segundos
+    CreateButaneFire(Center());
 }
 
 // BUG util! - Uma explosao de magnitude que nao mate o NPC faz ela repetir por algum motivo!!
-void CButano::ExplodeButano(int dmg, int magn)
+void CButano::ButaneExplosion(int dmg, int magn)
 {
 	// Ssaporra cria um raio de dano que explode os gib tudo seloco cachuera
 	RadiusDamage(pev->origin, pev, pev, dmg, CLASS_ALIEN_MONSTER, DMG_BLAST);
 
 	// Cria a explosao, precisa importar o CEnvExplosion
 	ExplosionCreate(Center(), pev->angles, ENT(pev), magn, true);
+
+    // Fogo que ilumina por alguns segundos
+    CreateButaneFire(Center());
 }
 
-void CButano::AtaqueCabuloso(void)
+void CButano::CabulosoAttack(void)
 {
 	// Cria um tracer para detectar se acertou ou nao o jogador
 	// Esse tracer ja faz um dano, porem colocamos 0 para so detectar.
@@ -189,7 +237,7 @@ void CButano::AtaqueCabuloso(void)
 	if (pHurt)
 	{
 		// Explode o NPC e tudo ao redor do raio.
-		ExplodeButano(200, 50);
+		ButaneExplosion(200, 50);
 
 		// Toca o som do Gas e Explode
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, pAttackHitSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackHitSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
@@ -208,7 +256,7 @@ void CButano::HandleAnimEvent(MonsterEvent_t* pEvent)
 	// Vazou Butano demais, ta na hora de Explodir!
 	if (gpGlobals->time >= m_flTimeToExplode)
 	{
-		ExplodeButano(50, 50);
+		ButaneExplosion(50, 50);
 		return;
 	}
 
@@ -216,15 +264,15 @@ void CButano::HandleAnimEvent(MonsterEvent_t* pEvent)
 	switch (pEvent->event)
 	{
 		case ZOMBIE_AE_ATTACK_RIGHT:
-			AtaqueCabuloso();
+			CabulosoAttack();
 			break;
 
 		case ZOMBIE_AE_ATTACK_LEFT:
-			AtaqueCabuloso();
+			CabulosoAttack();
 			break;
 
 		case ZOMBIE_AE_ATTACK_BOTH:
-			AtaqueCabuloso();
+			CabulosoAttack();
 			break;
 
 		default:

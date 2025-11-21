@@ -20,8 +20,8 @@ public:
 
 	void Killed(entvars_t* pevAttacker, int iGib) override;
 
-	void AtaqueCabuloso(void);
-	void ExplodeButano(int dano, int magn);
+	void CabulosoAttack(void);
+	void ButaneExplosion(int dano, int magn);
 
 	void PainSound(void) override;
 	void AlertSound(void) override;
