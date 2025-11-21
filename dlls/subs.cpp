@@ -643,7 +643,6 @@ bool CPointCounter::KeyValue(KeyValueData *pkvd)
 	else if (FStrEq(pkvd->szKeyName, "ptitle"))
 	{
 		m_sMessageTitle = ALLOC_STRING(pkvd->szValue);
-		return true;
 
 		// Configura os parametros do texto
 		// TODO: Deixar o jogador setar isso? (Copia do CGameText, nao reinventar a roda!..)
@@ -668,6 +667,8 @@ bool CPointCounter::KeyValue(KeyValueData *pkvd)
 		m_sCountText.fadeoutTime = 0.5;
 		m_sCountText.holdTime = 15;
 		m_sCountText.fxTime = 0.10;
+
+		return true;
 	}
 	else if (FStrEq(pkvd->szKeyName, "pfinishedtitle"))
 	{
