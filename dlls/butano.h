@@ -6,7 +6,7 @@
 
 // Definimos o tempo de vazamento do gas
 // Para explodir depois de um tmepo
-#define VAZAMENTO_BUTANO 15.0
+#define VAZAMENTO_BUTANO 7.0
 
 class CButano : public CZombie
 {
