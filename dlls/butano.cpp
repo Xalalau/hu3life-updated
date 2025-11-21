@@ -291,7 +291,7 @@ void CButano::PainSound(void)
 void CButano::AlertSound(void)
 {
 	// Emite o som de Alerta sem efeito de pitch
-	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAlertSounds[RANDOM_LONG(0, ARRAYSIZE(pAlertSounds) - 1)], 0.6, ATTN_NORM, 0, 100);
 }
 
 void CButano::IdleSound(void)
