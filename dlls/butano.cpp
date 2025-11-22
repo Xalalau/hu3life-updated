@@ -92,6 +92,9 @@ void CButano::Spawn()
 
 	pev->body = RANDOM_LONG(0, 1); // 2 botijoes por escolher
 
+	m_flLastMoveTime = gpGlobals->time;
+	m_vecLastPos = pev->origin;
+
 	MonsterInit();
 }
 
@@ -304,4 +307,49 @@ void CButano::AttackSound(void)
 {
 	// Som de ataque sem efeito de pitch
 	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, pAttackSounds[RANDOM_LONG(0, ARRAYSIZE(pAttackSounds) - 1)], 1.0, ATTN_NORM, 0, 100);
+}
+
+void CButano::UpdateIdleNoMoveExplosion(void)
+{
+    // Do not do anything if already dead
+    if(!IsAlive())
+        return;
+
+    float now = gpGlobals->time;
+
+    // If origin changed since last check, consider it moving
+    if(pev->origin.x != m_vecLastPos.x ||
+       pev->origin.y != m_vecLastPos.y ||
+       pev->origin.z != m_vecLastPos.z)
+    {
+        m_flLastMoveTime = now;
+        m_vecLastPos = pev->origin;
+        return;
+    }
+
+    // Time standing still at exactly the same origin
+    float idleTime = now - m_flLastMoveTime;
+
+    if(idleTime >= 3.0f)
+    {
+        // Prevent multiple explosions from this path
+        m_flLastMoveTime = now + 9999.0f;
+
+		// Tchau
+        ButaneExplosion(25, 50);
+
+		if (pev->health > 0) {
+			pev->health = -1;
+			Killed(pev, 0);
+		}
+    }
+}
+
+void CButano::PrescheduleThink(void)
+{
+    // Handle idle-explosion logic
+    UpdateIdleNoMoveExplosion();
+
+    // Keep default zombie behavior
+    CZombie::PrescheduleThink();
 }

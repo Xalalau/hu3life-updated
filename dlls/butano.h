@@ -36,4 +36,12 @@ public:
 	static const char *pAttackMissSounds[];
 
 	float m_flTimeToExplode;
+
+    virtual void PrescheduleThink(void);
+
+protected:
+    void UpdateIdleNoMoveExplosion(void);
+
+    float m_flLastMoveTime;
+	Vector m_vecLastPos;
 };
