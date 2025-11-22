@@ -166,6 +166,26 @@ void CButano::SetNewSpawn()
 		temp = UTIL_VecToAngles(hu3Player->pev->origin - butanoSpawnVec);
 		pev->angles.y = temp.y;
 	}
+	else
+	{
+        // Fallback: coloca em qualquer info_target
+        CBaseEntity* pAnyTarget = NULL;
+
+        pAnyTarget = UTIL_FindEntityByClassname(NULL, "info_target");
+        if(pAnyTarget)
+        {
+            pev->origin = pAnyTarget->pev->origin;
+
+            // Ainda faz ele olhar pro jogador escolhido
+            temp = UTIL_VecToAngles(hu3Player->pev->origin - pev->origin);
+            pev->angles.y = temp.y;
+        }
+		else
+		{
+			// Nao achou ponto de spawn, remove o NPC
+			UTIL_Remove(this);
+		}
+	}
 }
 
 void CreateButaneFire(const Vector& origin)
@@ -260,6 +280,12 @@ void CButano::HandleAnimEvent(MonsterEvent_t* pEvent)
 	if (gpGlobals->time >= m_flTimeToExplode)
 	{
 		ButaneExplosion(50, 50);
+
+		if (pev->health > 0) {
+			pev->health = -1;
+			Killed(pev, 0);
+		}
+
 		return;
 	}
 
